@@ -8,6 +8,46 @@ fn euclid(a: u32, b:u32) -> u32 {
     }
 }
 
+/**
+* Uses the quicksort algorithm to sort the passed array of positive integers.
+*/
+fn quicksort(a: &Vec<u32>) -> Vec<u32> {
+    // empty list and list with only one element are trivially sorted
+    if a.len() <= 1 {
+        return a.to_vec();
+    }
+
+    // isolate first element in the array (pivot) from the rest of the vector
+    let pivot = a[0];
+    let rest = &a[1..];
+
+    /*
+    * Split up list into two lists:
+    * those of the elements that are smaller and those that are greater/equal than the pivot.
+    *
+    * Note: I feel like this would be more elegant with closures to compute left and right.
+    */
+    let mut left = Vec::new();
+    let mut right = Vec::new();
+    for &elem in (*rest).iter() { // iterator contains references
+        if elem < pivot {
+            left.push(elem);
+        }
+        else {
+            right.push(elem);
+        }
+    }
+
+    /*
+    * Recursively solve the subproblems and concatenate the results.
+    */
+    let mut result:Vec<u32> = Vec::new();
+    result.append(&mut quicksort(&left));
+    result.push(pivot);
+    result.append(&mut quicksort(&right));
+    result
+}
+
 /*
 * Module for unit-tests of this file.
 */
@@ -34,5 +74,14 @@ mod tests {
 
         println!("test with b=0");
         assert_eq!(euclid(23, 0), 23);
+    }
+
+    #[test]
+    fn test_quicksort() {
+        let vector1 = vec![3, 2, 4, 1, 5];
+
+        let vector1_sorted = quicksort(&vector1);
+
+        assert_eq!(vector1_sorted, vec![1, 2, 3, 4, 5]);
     }
 }
