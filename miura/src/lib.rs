@@ -1,3 +1,6 @@
+// module declarations
+mod poly;
+
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
 */
@@ -54,6 +57,7 @@ fn quicksort(a: &Vec<u32>) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::poly::*;
 
     #[test]
     fn test_euclid() {
@@ -83,5 +87,24 @@ mod tests {
         let vector1_sorted = quicksort(&vector1);
 
         assert_eq!(vector1_sorted, vec![1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn degree_test() {
+        println!("Testing integer polynomial 1 + X + X^2 + X^3.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        assert_eq!(poly1.deg(), 3);
+
+        println!("Testing integer polynomial 426 + X + 0X^2.");
+
+        let poly2 = IntPoly::new(
+            &mut vec![426, 1, 0],
+            Modulus::None
+        );
+        assert_eq!(poly2.deg(), 1);
     }
 }
