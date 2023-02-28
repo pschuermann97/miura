@@ -6,6 +6,7 @@ use std::cmp::max; // maximum function
 *
 * The highest-degree monomial is guaranteed to have a coefficient != 0.
 */
+#[derive(PartialEq, Debug)]
 pub struct IntPoly {
     /*
     * Vector of coefficients of the polynomial,
@@ -84,7 +85,8 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
         );
     }
     
-    let result_len = max(poly1.deg(), poly2.deg());
+    // compute the degree = number of coefficients of the resulting polynomial
+    let result_len = max(poly1.deg() + 1, poly2.deg() + 1);
 
     let mut result_coeffs = vec![];
 
@@ -138,7 +140,7 @@ fn remove_trailing_zeros(vec: &mut Vec<i32>, modulus: Modulus) {
 * A modulus for a remainder class ring.
 * Implementation for the binary equals-operator is generated automatically using derived traits.
 */
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub enum Modulus {
     Some(i32),
     None
@@ -147,6 +149,7 @@ pub enum Modulus {
 /*
 * Models the different error types that can occur when working with polynomials.
 */
+#[derive(Debug)]
 pub enum PolynomialError {
     /*
     * Returned when trying to do some binary operation for polynomials with different moduli.

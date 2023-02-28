@@ -157,4 +157,54 @@ mod tests {
         );
         assert_eq!(poly4.deg(), 1);
     }
+
+    #[test]
+    fn add_poly_test() {
+        println!("Adding two integer polynomials with no trailing zeros in the sum.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::None
+        );
+
+        let result_12_poly = add_poly(&poly1, &poly2).unwrap();
+
+        assert_eq!(
+            result_12_poly,
+            IntPoly::new(
+                &mut vec![426, 426, 426, 426],
+                Modulus::None
+            )
+        );
+
+        println!("Adding two integer polynomials with trailing zeros in the sum.");
+
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 1, 426],
+            Modulus::None
+        );
+        let poly4 = IntPoly::new(
+            &mut vec![1, 1, 1, -426],
+            Modulus::None
+        );
+
+        let result_34_poly = add_poly(&poly3, &poly4).unwrap();
+
+        assert_eq!(
+            result_34_poly,
+            IntPoly::new(
+                &mut vec![2, 2, 2],
+                Modulus::None
+            )
+        );
+    }
+
+    #[test]
+    fn add_poly_mismatching_moduli_test() {
+
+    }
 }
