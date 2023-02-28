@@ -34,18 +34,7 @@ impl IntPoly {
     */
     pub fn new(coeff:&mut Vec<i32>, md: Modulus) -> IntPoly {
         // trim trailing zeros/ multiples of modulus
-        let mut n = coeff.len();
-        while 
-            (md == Modulus::None && coeff[n-1] == 0 )
-            || {
-                if let Modulus::Some(x) = md {
-                    coeff[n-1] % x == 0
-                } else { false }
-            }    
-        {
-            coeff.pop();
-            n = coeff.len(); // coefficients vector was shortened by 1
-        }
+        remove_trailing_zeros(coeff, md);
         
         IntPoly {
             coefficients: coeff.to_vec(),
@@ -104,12 +93,6 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
         result_coeffs.push(poly1.coefficient(i) + poly2.coefficient(i));
     }
 
-    // creating result polynomial 
-    let result_poly = IntPoly::new(
-        &mut result_coeffs,
-        poly1.modulus // at this point, the polynomials can be assumed to have the same modulus
-    );
-
     /*
     * Remove trailing zeros from the result polynomial.
     * 
@@ -119,16 +102,36 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
     * When adding e.g. 3X^2 + X and 2X^2 + 2X over Z/5Z, 
     * the sum is 5X^2 + 3X = 3X and has a lower degree than the summands.
     */
+    remove_trailing_zeros(&mut result_coeffs, poly1.modulus); // at this point, the polynomials can be assumed to have the same modulus
+
+    // creating result polynomial 
+    let result_poly = IntPoly::new(
+        &mut result_coeffs,
+        poly1.modulus 
+    );
 
     Ok(result_poly)
 }
 
 /*
-* Removes the trailing zeros from the passed vector,
-* e.g. vec![2, 3, 0, 0] becomes vec![2, 3].
+* Removes the trailing zeros/ multiples of the passed modulus from the passed vector,
+* e.g. vec![2, 3, 0, 0] over modulus None becomes vec![2, 3]
+* and vec![2, 4, 5, 5] over modulus Some(5) becomes vec![2, 4].
+*
 */
-fn remove_trailing_zeros(vec: &mut Vec<i32>) {
-
+fn remove_trailing_zeros(vec: &mut Vec<i32>, modulus: Modulus) {
+    let mut n = vec.len();
+    while 
+        (modulus == Modulus::None && vec[n-1] == 0 )
+        || {
+            if let Modulus::Some(x) = modulus {
+                vec[n-1] % x == 0
+            } else { false }
+        }    
+    {
+        vec.pop();
+        n = vec.len(); // coefficients vector was shortened by 1
+    }
 }
 
 /*
