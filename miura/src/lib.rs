@@ -90,8 +90,42 @@ mod tests {
     }
 
     #[test]
+    fn get_coefficient_test() {
+        println!("Checking coefficients of integer polynomial.");
+
+        let integer_poly = IntPoly::new(
+            &mut vec![2, 3, 2, 1],
+            Modulus::None
+        );
+        assert_eq!(integer_poly.coefficient(0), 2);
+        assert_eq!(integer_poly.coefficient(1), 3);
+        assert_eq!(integer_poly.coefficient(2), 2);
+        assert_eq!(integer_poly.coefficient(3), 1);
+        assert_eq!(integer_poly.coefficient(4), 0);
+        assert_eq!(integer_poly.coefficient(426), 0);
+
+        println!("Checking coefficients of remainder class ring polynomial.");
+
+        let rem_class_ring_poly = IntPoly::new(
+            &mut vec![1, 13, 5, 10],
+            Modulus::Some(5)
+        );
+        assert_eq!(rem_class_ring_poly.coefficient(0), 1);
+        assert_eq!(rem_class_ring_poly.coefficient(1), 3);
+        assert_eq!(rem_class_ring_poly.coefficient(2), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(3), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(4), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(5184), 0);
+    }
+
+    /*
+    * Computes the degree of some polynomials,
+    * with/without trailing zeros,
+    * over integer and remainder class rings.
+    */
+    #[test]
     fn degree_test() {
-        println!("Testing integer polynomial 1 + X + X^2 + X^3.");
+        println!("Testing integer polynomial with no trailing zero coefficients.");
 
         let poly1 = IntPoly::new(
             &mut vec![1, 1, 1, 1],
@@ -99,12 +133,28 @@ mod tests {
         );
         assert_eq!(poly1.deg(), 3);
 
-        println!("Testing integer polynomial 426 + X + 0X^2.");
+        println!("Testing integer polynomial with trailing zero coefficients.");
 
         let poly2 = IntPoly::new(
             &mut vec![426, 1, 0],
             Modulus::None
         );
         assert_eq!(poly2.deg(), 1);
+
+        println!("Testing remainder class ring polynomial with no trailing zero coefficients.");
+
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 1, 2],
+            Modulus::Some(5)
+        );
+        assert_eq!(poly3.deg(), 3);
+
+        println!("Testing remainder class ring polynomial with trailing zero coefficients.");
+
+        let poly4 = IntPoly::new(
+            &mut vec![1, 4, 5, 10],
+            Modulus::Some(5)
+        );
+        assert_eq!(poly4.deg(), 1);
     }
 }
