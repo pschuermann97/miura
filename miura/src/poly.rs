@@ -189,6 +189,12 @@ pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     add_poly(poly1, &poly2.additive_inverse())
 }
 
+/*
+* Returns the product of the two passed polynomials.
+* Trailing zeros of the product are cut in the process.
+*
+* If the moduli of the polynomials do not match, the function returns an error.
+*/
 pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
     // two polynomials with non-matching moduli cannot be multiplied meaningfully
     if poly1.modulus != poly2.modulus {
@@ -196,6 +202,20 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
             PolynomialError::ModulusMismatchError(poly1.modulus, poly2.modulus)
         );
     }
+
+    /*
+    * The implementation of this function exploits the distributive law for polynomials.
+    * So a product of two polynomials f (with m monomials) and g (with degree n)
+    * is computed as a sum of m degree-n polynomials.
+    *
+    * To illustrate this, consider f(X) = X^2 + 2X + 1 with m=3 monomials
+    * and g(X) = X^3 + 4X with degree n=3.
+    * We have (X^2 + 2X + 1) * (X^3 + 4X) = X^2 * (X^3 + 4X) + 2X * (X^3 + 4X) + 1 * (X^3 + 4X).
+    *
+    * A product of a monomial aX^m with a polynomial p can be computed
+    * by inserting m zeros at the beginning of the coefficient vector of p
+    * and then scaling the resulting vector by a (i.e. multiplying every entry by a).
+    */
 
     Ok(zero_polynomial(Modulus::None))
 }
