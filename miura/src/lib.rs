@@ -274,6 +274,41 @@ mod tests {
     }
 
     #[test]
+    fn subtract_poly_test() {
+        println!("Subtracting a polynomial from itself.");
+        
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 426],
+            Modulus::None
+        );
+        assert_eq!(
+            subtract_poly(&poly1, &poly1),
+            Ok(
+                IntPoly::new(
+                    &mut vec![],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Subtracting two different polynomials.");
+
+        let poly2 = IntPoly::new(
+            &mut vec![0, 2, 427, 424],
+            Modulus::None
+        );
+        assert_eq!(
+            subtract_poly(&poly1, &poly2),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, -1, -426, 2],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
+    #[test]
     fn scale_poly_test() {
         println!("Scale a polynomial with a positive number.");
         let poly1 = IntPoly::new(

@@ -90,6 +90,13 @@ impl IntPoly {
             self.modulus
         )
     }
+
+    /*
+    * Returns the additive inverse of the passed polynomial.
+    */
+    pub fn additive_inverse(self: &Self) -> IntPoly {
+        self.scale(-1)
+    }
 }
 
 /*
@@ -136,8 +143,14 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
     Ok(result_poly)
 }
 
-pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) {
-    
+/*
+* Returns the difference poly1 - poly2 of the two passed polynomials.
+* Trailing zeros of the difference are cut in the process.
+*
+* If the moduli of the polynomials do not match, the function returns an error. 
+*/
+pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
+    add_poly(poly1, &poly2.additive_inverse())
 }
 
 /*
