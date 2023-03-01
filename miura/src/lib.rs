@@ -375,4 +375,23 @@ mod tests {
 
         assert_eq!(shifted_vec2, vec);
     }
+
+    #[test]
+    fn test_scale_vector() {
+        println!("Scale vector by positive number.");
+
+        let vec = vec![426, 1, 1];
+        let scaled_vector1 = scale_vector(&vec, 5);
+        assert_eq!(scaled_vector1, vec![2130, 5, 5]);
+
+        println!("Scale vector by negative number.");
+
+        let scaled_vector2 = scale_vector(&vec, -5);
+        assert_eq!(scaled_vector2, vec![-2130, -5, -5]);
+
+        println!("Scale vector by 0.");
+
+        let scaled_vector3 = scale_vector(&vec, 0);
+        assert_eq!(scaled_vector3, vec![0, 0, 0]);
+    }
 }
