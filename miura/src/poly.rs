@@ -50,6 +50,17 @@ impl IntPoly {
     * we reduce the coefficient to the standard representative system {0, ..., q-1}.
     */
     pub fn coefficient(self: &Self, exponent: usize) -> i32 {
+        /*
+        * Coefficient that are not explicitly listed in the self.coefficients vector are 0.
+        * We capture the edge case of the zero polynomial 
+        * (coefficients vector is empty, thus all coefficients are 0)
+        * here to prevent a runtime error when comparing the length of the coefficients vector - 1
+        * to the passed exponent (which is an usize integer, thus non-negative) down below.
+        */
+        if self.coefficients.len() == 0 {
+            return 0;
+        }
+        
         // coefficients that are not explicitly listed in the vector are 0
         if exponent > self.coefficients.len() - 1 {
             return 0;
@@ -141,6 +152,31 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
     );
 
     Ok(result_poly)
+}
+
+/*
+* Computes the sum of n polynomials which are passed as a vector of length n.
+* Trailing zeros of the sum are cut in the process.
+*
+* If the moduli of the polynomials do not match, the function returns an error. 
+*
+* If the passed vector is empty, a PolynomialError::EmptyPolyVectorError is returned.
+*/
+pub fn sum_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
+    if poly_vec.len() == 0 {
+        return Err(PolynomialError::EmptyPolyVectorError);
+    }
+    
+    // from here, we can assume that poly_vec contains at least one polynomial
+
+    let mut result = zero_polynomial(poly_vec[0].modulus);
+
+    for poly in poly_vec.iter() { // elements of iterators are references
+        // "?"-operator: error is returned to the caller, for situation-dependent error handling
+        result = add_poly(&result, poly)?; 
+    }
+
+    Ok(result)
 }
 
 /*
@@ -261,5 +297,10 @@ pub enum PolynomialError {
     /*
     * Returned when trying to do some binary operation for polynomials with different moduli.
     */
-    ModulusMismatchError(Modulus, Modulus)
+    ModulusMismatchError(Modulus, Modulus),
+    /*
+    * Returned when an empty vector of polynomials is passed to an arithmetic function
+    * expecting a vector of multiple polynomials.
+    */
+    EmptyPolyVectorError
 }

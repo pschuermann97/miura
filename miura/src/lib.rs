@@ -349,6 +349,42 @@ mod tests {
         )
     }
 
+    #[test]
+    fn test_sum_of_polys() {
+        println!("Testing with four integer polynomials.");
+        
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 426],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![2, 2, 2],
+            Modulus::None
+        );
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 0],
+            Modulus::None
+        );
+        let poly4 = IntPoly::new(
+            &mut vec![0, 0, 0],
+            Modulus::None
+        );
+
+        let poly_vec = vec![poly1, poly2, poly3, poly4];
+
+        let result_poly = sum_of_polys(&poly_vec);
+
+        assert_eq!(
+            result_poly,
+            Ok(
+                IntPoly::new(
+                    &mut vec![4, 4, 428],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
 
 
     // -------------------- end of tests for polynomial module --------------------
