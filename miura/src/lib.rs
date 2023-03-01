@@ -156,6 +156,11 @@ mod tests {
             Modulus::Some(5)
         );
         assert_eq!(poly4.deg(), 1);
+
+        println!("Testing integer zero polynomial.");
+
+        let zero_poly = zero_polynomial(Modulus::None);
+        assert_eq!(zero_poly.deg(), -1);
     }
 
     #[test]
@@ -201,10 +206,104 @@ mod tests {
                 Modulus::None
             )
         );
+
+        println!("Adding two remainder class ring polynomials with no trailing zeros in the sum.");
+
+        let poly5 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::Some(5)
+        );
+        let poly6 = IntPoly::new(
+            &mut vec![2, 2, 2, 2],
+            Modulus::Some(5)
+        );
+
+        let result_56_poly = add_poly(&poly5, &poly6).unwrap();
+
+        assert_eq!(
+            result_56_poly,
+            IntPoly::new(
+                &mut vec![3, 3, 3, 3],
+                Modulus::Some(5)
+            )
+        );
+
+        println!("Adding two remainder class ring polynomials with trailing zeros in the sum.");
+
+        let poly7 = IntPoly::new(
+            &mut vec![2, 1, 1, 1],
+            Modulus::Some(426)
+        );
+        let poly8 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::Some(426)
+        );
+
+        let result_78_poly = add_poly(&poly7, &poly8).unwrap();
+
+        assert_eq!(
+            result_78_poly,
+            IntPoly::new(
+                &mut vec![427],
+                Modulus::Some(426)
+            )
+        );
     }
 
     #[test]
     fn add_poly_mismatching_moduli_test() {
+        println!("Adding two integer polynomials with mismatching moduli.");
 
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::Some(426)
+        );
+
+        let result_12_poly = add_poly(&poly1, &poly2);
+
+        assert_eq!(
+            result_12_poly, Err(PolynomialError::ModulusMismatchError(
+                Modulus::None,
+                Modulus::Some(426)
+            ))
+        )
+    }
+
+    #[test]
+    fn scale_poly_test() {
+        println!("Scale a polynomial with a positive number.");
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1],
+            Modulus::None
+        );
+        assert_eq!(
+            poly1.scale(426),
+            IntPoly::new(
+                &mut vec![426, 426, 426],
+                Modulus::None
+            )
+        );
+
+        println!("Scale a polynomial with a negative number.");
+        assert_eq!(
+            poly1.scale(-426),
+            IntPoly::new(
+                &mut vec![-426, -426, -426],
+                Modulus::None
+            )
+        );
+
+        println!("Scale a polynomial with 0.");
+        assert_eq!(
+            poly1.scale(0),
+            IntPoly::new(
+                &mut vec![],
+                Modulus::None
+            )
+        )
     }
 }

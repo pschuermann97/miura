@@ -65,9 +65,30 @@ impl IntPoly {
     * Computes the degree of the passed polynomial.
     * Exploits the fact that trailing zeros are cut from the polynomial upon instantiation,
     * i.e. 1 + X + 0X^2 + 4X^3 + 0X^4 becomes 1 + X + 0X^2 + 4X^3.
+    *
+    * Note that in this library, the degree of the zero polynomial is -1,
+    * some literature has it as negative infinity.
     */
-    pub fn deg(self: &Self) -> usize {
-        self.coefficients.len() - 1
+    pub fn deg(self: &Self) -> i32 {
+        if self.coefficients.len() == 0 { -1 } 
+        /*
+        * This value is always greater then -1 <=> self.coefficients.len() is greater 0.
+        * The latter is guaranteed in this else block so unwrap will never panic.
+        */
+        else { (self.coefficients.len() - 1).try_into().unwrap() }
+    }
+
+    /*
+    * Scales the polynomial with the passed scale factor,
+    * i.e. multiplies all the coefficients with it.
+    * The result is returned as a new IntPoly instance,
+    * the original polynomial is not changed.
+    */
+    pub fn scale(self: &Self, scale_factor: i32) -> IntPoly {
+        IntPoly::new( // this call removes trailing zeros from the passed vector automatically
+            &mut self.coefficients.iter().map(|a| scale_factor * a).collect::<Vec<i32>>(),
+            self.modulus
+        )
     }
 }
 
@@ -85,8 +106,8 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
         );
     }
     
-    // compute the degree = number of coefficients of the resulting polynomial
-    let result_len = max(poly1.deg() + 1, poly2.deg() + 1);
+    // compute the (maximum possible) degree = number of coefficients of the resulting polynomial
+    let result_len = max(poly1.coefficients.len(), poly2.coefficients.len());
 
     let mut result_coeffs = vec![];
 
@@ -115,17 +136,21 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
     Ok(result_poly)
 }
 
+pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) {
+    
+}
+
 /*
 * Removes the trailing zeros/ multiples of the passed modulus from the passed vector,
 * e.g. vec![2, 3, 0, 0] over modulus None becomes vec![2, 3]
 * and vec![2, 4, 5, 5] over modulus Some(5) becomes vec![2, 4].
-*
 */
 fn remove_trailing_zeros(vec: &mut Vec<i32>, modulus: Modulus) {
     let mut n = vec.len();
     while 
-        (modulus == Modulus::None && vec[n-1] == 0 )
-        || {
+        vec.len() > 0 && // stop if vector empty (this means the vector models the zero polynomial)
+        (modulus == Modulus::None && vec[n-1] == 0 ) // remove trailing zeros for integer polynomial
+        || { // all multiples of the modulus are 0 in a remainder class ring
             if let Modulus::Some(x) = modulus {
                 vec[n-1] % x == 0
             } else { false }
@@ -134,6 +159,26 @@ fn remove_trailing_zeros(vec: &mut Vec<i32>, modulus: Modulus) {
         vec.pop();
         n = vec.len(); // coefficients vector was shortened by 1
     }
+}
+
+/*
+* Returns the zero polynomial with the passed Modulus.
+*/
+pub fn zero_polynomial(md: Modulus) -> IntPoly {
+    IntPoly::new(
+        &mut vec![],
+        md
+    )
+}
+
+/*
+* Returns the one polynomial with the passed Modulus.
+*/
+pub fn one_polynomial(md: Modulus) -> IntPoly {
+    IntPoly::new(
+        &mut vec![1],
+        md
+    )
 }
 
 /*
@@ -149,7 +194,7 @@ pub enum Modulus {
 /*
 * Models the different error types that can occur when working with polynomials.
 */
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PolynomialError {
     /*
     * Returned when trying to do some binary operation for polynomials with different moduli.
