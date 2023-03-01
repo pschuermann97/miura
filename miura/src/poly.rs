@@ -153,6 +153,43 @@ pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     add_poly(poly1, &poly2.additive_inverse())
 }
 
+pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
+    // two polynomials with non-matching moduli cannot be multiplied meaningfully
+    if poly1.modulus != poly2.modulus {
+        return Err(
+            PolynomialError::ModulusMismatchError(poly1.modulus, poly2.modulus)
+        );
+    }
+
+    Ok(zero_polynomial(Modulus::None))
+}
+
+/*
+* Returns the zero polynomial with the passed Modulus.
+*/
+pub fn zero_polynomial(md: Modulus) -> IntPoly {
+    IntPoly::new(
+        &mut vec![],
+        md
+    )
+}
+
+/*
+* Returns the one polynomial with the passed Modulus.
+*/
+pub fn one_polynomial(md: Modulus) -> IntPoly {
+    IntPoly::new(
+        &mut vec![1],
+        md
+    )
+}
+
+
+
+// ---------------- vector helper functions ------------------------
+
+
+
 /*
 * Removes the trailing zeros/ multiples of the passed modulus from the passed vector,
 * e.g. vec![2, 3, 0, 0] over modulus None becomes vec![2, 3]
@@ -175,24 +212,28 @@ fn remove_trailing_zeros(vec: &mut Vec<i32>, modulus: Modulus) {
 }
 
 /*
-* Returns the zero polynomial with the passed Modulus.
+* Shifts a vector by adding the passed number of zeros at the beginning
+* i.e. vec![1, 1, 426] becomes vec![0, 0, 1, 1, 426] when shifted by 2.
 */
-pub fn zero_polynomial(md: Modulus) -> IntPoly {
-    IntPoly::new(
-        &mut vec![],
-        md
-    )
+pub fn shift_vector(vec: &Vec<i32>, amt: usize) -> Vec<i32> {
+    let mut result: Vec<i32> = vec![];
+
+    for _ in 0..amt {
+        result.push(0);
+    }
+
+    for x in vec.iter() {
+        result.push(*x);
+    }
+
+    result
 }
 
-/*
-* Returns the one polynomial with the passed Modulus.
-*/
-pub fn one_polynomial(md: Modulus) -> IntPoly {
-    IntPoly::new(
-        &mut vec![1],
-        md
-    )
-}
+
+
+// ---------------- end of vector helper functions ------------------------
+
+
 
 /*
 * A modulus for a remainder class ring.

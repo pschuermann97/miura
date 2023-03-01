@@ -89,6 +89,13 @@ mod tests {
         assert_eq!(vector1_sorted, vec![1, 2, 3, 4, 5]);
     }
 
+
+
+    // -------------------- tests for polynomial module --------------------
+
+
+
+
     #[test]
     fn get_coefficient_test() {
         println!("Checking coefficients of integer polynomial.");
@@ -340,5 +347,32 @@ mod tests {
                 Modulus::None
             )
         )
+    }
+
+
+
+    // -------------------- end of tests for polynomial module --------------------
+
+
+
+    // -------------------- tests for vector helper functions ---------------------
+
+
+
+    #[test]
+    fn test_shift_vector() {
+        println!("Shift vector by positive number.");
+
+        let vec = vec![426, 99, 71];
+
+        let shifted_vec1 = shift_vector(&vec, 3);
+
+        assert_eq!(shifted_vec1, vec![0, 0, 0, 426, 99, 71]);
+
+        println!("Shift vector by 0.");
+
+        let shifted_vec2 = shift_vector(&vec, 0);
+
+        assert_eq!(shifted_vec2, vec);
     }
 }
