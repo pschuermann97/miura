@@ -97,7 +97,7 @@ impl IntPoly {
     */
     pub fn scale(self: &Self, scale_factor: i32) -> IntPoly {
         IntPoly::new( // this call removes trailing zeros from the passed vector automatically
-            &mut self.coefficients.iter().map(|a| scale_factor * a).collect::<Vec<i32>>(),
+            &mut scale_vector(&self.coefficients, scale_factor),
             self.modulus
         )
     }
@@ -163,8 +163,9 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
 * If the passed vector is empty, a PolynomialError::EmptyPolyVectorError is returned.
 */
 pub fn sum_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
+    // empty sum of polynomials is integer zero polynomial
     if poly_vec.len() == 0 {
-        return Err(PolynomialError::EmptyPolyVectorError);
+        return Ok(zero_polynomial(Modulus::None));
     }
     
     // from here, we can assume that poly_vec contains at least one polynomial
@@ -204,6 +205,12 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     }
 
     /*
+    * At this point we can assume all the polynomials to have the same modulus.
+    * We introduce this binding for better readability.
+    */
+    let the_modulus = poly1.modulus;
+
+    /*
     * The implementation of this function exploits the distributive law for polynomials.
     * So a product of two polynomials f (with m monomials) and g (with degree n)
     * is computed as a sum of m degree-n polynomials.
@@ -212,12 +219,41 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     * and g(X) = X^3 + 4X with degree n=3.
     * We have (X^2 + 2X + 1) * (X^3 + 4X) = X^2 * (X^3 + 4X) + 2X * (X^3 + 4X) + 1 * (X^3 + 4X).
     *
-    * A product of a monomial aX^m with a polynomial p can be computed
-    * by inserting m zeros at the beginning of the coefficient vector of p
+    * A product of a monomial aX^i with a polynomial p can be computed
+    * by inserting i zeros at the beginning of the coefficient vector of p
     * and then scaling the resulting vector by a (i.e. multiplying every entry by a).
     */
 
-    Ok(zero_polynomial(Modulus::None))
+    // create vector to store the m polynomials to add
+    let mut poly_vec: Vec<IntPoly> = vec![];
+
+    // compute intermediate degree-n polynomials aX^i * p as described above
+    for i in 0..poly1.deg() {
+        poly_vec.push(
+            IntPoly::new(
+                // compute aX^i * p by scaling the coefficients of X^i * p with a
+                &mut scale_vector(
+                    /*
+                    * Compute X^i * p by shifting the coefficients of p
+                    * by the degree i of the monomial X^i.
+                    */
+                    &shift_vector(
+                        &poly2.coefficients, 
+                        /*
+                        * Conversion of i32 to usize will never return Error variant
+                        * since i can be guaranteed to be non-negative.
+                        */
+                        i.try_into().unwrap()
+                    ), 
+                    // unwrap should not panic, see above
+                    poly1.coefficient(i.try_into().unwrap())
+                ),
+                the_modulus
+            )
+        );
+    }
+
+    sum_of_polys(&poly_vec)
 }
 
 /*

@@ -383,6 +383,38 @@ mod tests {
                 )
             )
         );
+
+        println!("Testing with empty polynomial vector, expecting zero polynomial.");
+
+        assert_eq!(
+            sum_of_polys(&vec![]),
+            Ok(zero_polynomial(Modulus::None))
+        )
+    }
+
+    #[test]
+    fn test_multiply_poly() {
+        println!("Testing with two integer polynomials.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 2, 1],
+            Modulus::None
+        );
+
+        let poly2 = IntPoly::new(
+            &mut vec![0, 4, 0, 1],
+            Modulus::None
+        );
+
+        let expected_result = IntPoly::new(
+            &mut vec![0, 4, 8, 5, 2, 1],
+            Modulus::None
+        );
+
+        assert_eq!(
+            multiply_poly(&poly1, &poly2),
+            Ok(expected_result)
+        );
     }
 
 
