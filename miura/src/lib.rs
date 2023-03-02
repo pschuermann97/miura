@@ -406,14 +406,25 @@ mod tests {
             Modulus::None
         );
 
-        let expected_result = IntPoly::new(
-            &mut vec![0, 4, 8, 5, 2, 1],
-            Modulus::None
-        );
-
         assert_eq!(
             multiply_poly(&poly1, &poly2),
-            Ok(expected_result)
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 4, 8, 5, 2, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        // polynomial multiplication should be commutative
+        assert_eq!(
+            multiply_poly(&poly2, &poly1),
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 4, 8, 5, 2, 1],
+                    Modulus::None
+                )
+            )
         );
     }
 

@@ -228,7 +228,7 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     let mut poly_vec: Vec<IntPoly> = vec![];
 
     // compute intermediate degree-n polynomials aX^i * p as described above
-    for i in 0..poly1.deg() {
+    for i in 0..poly1.deg()+1 {
         poly_vec.push(
             IntPoly::new(
                 // compute aX^i * p by scaling the coefficients of X^i * p with a
