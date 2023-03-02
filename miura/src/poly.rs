@@ -160,7 +160,7 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
 *
 * If the moduli of the polynomials do not match, the function returns an error. 
 *
-* If the passed vector is empty, a PolynomialError::EmptyPolyVectorError is returned.
+* If the passed vector is empty, the zero polynomial is returned.
 */
 pub fn sum_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
     // empty sum of polynomials is integer zero polynomial
@@ -255,6 +255,46 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
 
     sum_of_polys(&poly_vec)
 }
+
+/*
+* Computes the product of n polynomials which are passed as a vector of length n.
+* Trailing zeros of the product are cut in the process.
+*
+* If the moduli of the polynomials do not match, the function returns an error. 
+*
+* If the passed vector is empty, the one polynomial is returned.
+*/
+pub fn product_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
+    // empty product of polynomials is the (integer) one polynomial
+    if poly_vec.len() == 0 {
+        return Ok(one_polynomial(Modulus::None));
+    }
+
+    // from here, we can assume that poly_vec contains at least one polynomial
+
+    let mut result = one_polynomial(poly_vec[0].modulus);
+
+    for poly in poly_vec.iter() { // elements of iterators are references
+        // "?"-operator: error is returned to the caller, for situation-dependent error handling
+        result = multiply_poly(&result, poly)?; 
+    }
+
+    Ok(result)
+}
+
+/*
+* Takes the passed polynomial to the power 
+* determined by the passed positive exponent.
+*/
+pub fn poly_power(poly: &IntPoly, exponent: usize) -> Result<IntPoly, PolynomialError> {
+    // create vector of exponent copies of the passed polynomial
+    let mut poly_vec: Vec<IntPoly> = vec![];
+    for _ in 0..exponent {
+        poly_vec.push(*poly);
+    }
+
+    Ok(product_of_polys(&poly_vec)) // product_of_polys might throw a PolynomialError
+}  
 
 /*
 * Returns the zero polynomial with the passed Modulus.
