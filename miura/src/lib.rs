@@ -428,6 +428,77 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_product_of_polys() {
+        println!("Testing with three integer polynomials.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![0, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![1, 1, 1],
+            Modulus::None
+        );
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 2],
+            Modulus::None
+        );
+
+        assert_eq!(
+            product_of_polys(&vec![poly1, poly2, poly3]),
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 1, 3, 6, 7, 5, 2],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn test_poly_power() {
+        println!("Testing with integer polynomial and exponent 2.");
+
+        let poly = IntPoly::new(
+            &mut vec![1, 1],
+            Modulus::None
+        );
+        assert_eq!(
+            poly_power(&poly, 2),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, 2, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Testing with integer polynomial and exponent 3.");
+
+        assert_eq!(
+            poly_power(&poly, 3),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, 3, 3, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Asserting that remainder class ring polynomial to the power of 0 is over correct ring.");
+
+        let rem_class_poly = IntPoly::new(
+            &mut vec![1, 1],
+            Modulus::Some(5)
+        );
+
+        assert_eq!(
+            poly_power(&rem_class_poly, 0),
+            Ok(one_polynomial(Modulus::Some(5)))
+        );
+    }
+
 
 
     // -------------------- end of tests for polynomial module --------------------

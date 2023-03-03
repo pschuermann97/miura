@@ -6,7 +6,7 @@ use std::cmp::max; // maximum function
 *
 * The highest-degree monomial is guaranteed to have a coefficient != 0.
 */
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct IntPoly {
     /*
     * Vector of coefficients of the polynomial,
@@ -287,13 +287,24 @@ pub fn product_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialEr
 * determined by the passed positive exponent.
 */
 pub fn poly_power(poly: &IntPoly, exponent: usize) -> Result<IntPoly, PolynomialError> {
+    /*
+    * Need to catch this special case here since
+    * product_of_polys always returns the integer zero polynomial
+    * when called with an empty polynomial vector.
+    * So p^0 for a remainder class ring polynomial would yield a wrong result 
+    * without the following if-clause. 
+    */
+    if exponent == 0 {
+        return Ok(one_polynomial(poly.modulus));
+    }
+    
     // create vector of exponent copies of the passed polynomial
     let mut poly_vec: Vec<IntPoly> = vec![];
     for _ in 0..exponent {
-        poly_vec.push(*poly);
+        poly_vec.push(poly.clone());
     }
 
-    Ok(product_of_polys(&poly_vec)) // product_of_polys might throw a PolynomialError
+    product_of_polys(&poly_vec) // product_of_polys might throw a PolynomialError
 }  
 
 /*
@@ -393,10 +404,5 @@ pub enum PolynomialError {
     /*
     * Returned when trying to do some binary operation for polynomials with different moduli.
     */
-    ModulusMismatchError(Modulus, Modulus),
-    /*
-    * Returned when an empty vector of polynomials is passed to an arithmetic function
-    * expecting a vector of multiple polynomials.
-    */
-    EmptyPolyVectorError
+    ModulusMismatchError(Modulus, Modulus)
 }
