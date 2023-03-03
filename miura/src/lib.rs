@@ -1,5 +1,6 @@
 // module declarations
 mod poly;
+mod vec_helper;
 
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
@@ -52,12 +53,13 @@ fn quicksort(a: &Vec<u32>) -> Vec<u32> {
 }
 
 /*
-* Module for unit-tests of this file.
+* Module for unit-tests of this project.
 */
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::poly::*;
+    use crate::vec_helper::*;
 
     #[test]
     fn test_euclid() {
