@@ -52,7 +52,7 @@ impl IntPoly {
     */
     pub fn coefficient(self: &Self, exponent: usize) -> i32 {
         /*
-        * Coefficient that are not explicitly listed in the self.coefficients vector are 0.
+        * Coefficients that are not explicitly listed in the self.coefficients vector are 0.
         * We capture the edge case of the zero polynomial 
         * (coefficients vector is empty, thus all coefficients are 0)
         * here to prevent a runtime error when comparing the length of the coefficients vector - 1
@@ -108,6 +108,37 @@ impl IntPoly {
     */
     pub fn additive_inverse(self: &Self) -> IntPoly {
         self.scale(-1)
+    }
+
+    pub fn to_string(self: &Self) -> String {
+        /*
+        * Special case: representation of polynomial with empty coefficients vector 
+        * is not the empty string "" but "0".
+        */
+        if self.coefficients.len() == 0{
+            return String::from("0");
+        }
+        
+        let mut string_representation = String::new();
+        
+        for (i, &a_i) in self.coefficients.iter().enumerate() {
+            // add a proper description of each monomial
+            if a_i != 0 {
+                string_representation.push_str(
+                    &(a_i.to_string() + "X^" + &i.to_string())
+                );
+            }
+
+            // add a "+" between the monomials
+            string_representation.push_str(" + ");
+        }
+
+        // remove final "+"
+        string_representation = string_representation[
+            0..string_representation.len()-3
+        ].to_string();
+
+        return string_representation;
     }
 }
 

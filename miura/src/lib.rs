@@ -501,6 +501,16 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_string_representation() {
+        let poly1 = IntPoly::new(
+            &mut vec![1, 2, 1, 0],
+            Modulus::None
+        );
+
+        println!("{}", poly1.to_string());
+    }
+
 
 
     // -------------------- end of tests for polynomial module --------------------
