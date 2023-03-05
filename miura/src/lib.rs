@@ -1,6 +1,7 @@
 // module declarations
 mod poly;
 mod vec_helper;
+mod permutation;
 
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
@@ -58,8 +59,11 @@ fn quicksort(a: &Vec<u32>) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use crate::poly::*;
     use crate::vec_helper::*;
+
+    use crate::permutation::*;
 
     #[test]
     fn test_euclid() {
@@ -514,6 +518,63 @@ mod tests {
 
 
     // -------------------- end of tests for polynomial module --------------------
+
+
+
+    // -------------------- tests for permutations module --------------------------
+
+    #[test]
+    fn permutation_constructor_test() {
+        println!("Creating a proper permutation.");
+
+        let image_vec1 = vec![5, 3, 2, 1, 4];
+        assert!(
+            Permutation::new(image_vec1).is_ok()
+        );
+
+        println!("Attempt to create a permutation that has an out-of-range image.");
+
+        let image_vec2 = vec![2, 6, 4, 1, 3];
+        assert_eq!(
+            Permutation::new(image_vec2),
+            Err(PermutationError::ImageOutOfRangeError)
+        );
+
+        println!("Attempt to create a permutation that is not bijective.");
+
+        let image_vec3 = vec![1, 2, 3, 4, 1];
+        assert_eq!(
+            Permutation::new(image_vec3),
+            Err(PermutationError::NotBijectiveError)
+        );
+
+        println!("Attempt to create a permutation for an empty image vector.");
+
+        assert_eq!(
+            Permutation::new(vec![]),
+            Err(PermutationError::EmptyImageVectorError)
+        );
+    }
+
+    #[test]
+    /*
+    * Tests whether the size of the set that the permutation operates on
+    * can be correctly computed.
+    */
+    fn n_test() {
+        println!("Creating S_1 permutation.");
+
+        let n1 = Permutation::new(vec![1]).unwrap().n();
+        assert_eq!(n1, 1);
+
+        println!("Creating S_5 permutation.");
+
+        let n2 = Permutation::new(vec![5, 3, 2, 1, 4]).unwrap().n();
+        assert_eq!(n2, 5);
+    }
+
+
+    // -------------------- end of test for permutations module -------------------
 
 
 
