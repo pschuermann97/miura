@@ -573,6 +573,37 @@ mod tests {
         assert_eq!(n2, 5);
     }
 
+    #[test]
+    fn eval_test() {
+        println!("Creating an S_5 permutation.");
+
+        let sigma = Permutation::new(
+            vec![3, 4, 2, 1, 5]
+        ).unwrap();
+
+        println!("Checking evaluation for 3");
+
+        assert_eq!(sigma.eval(3), Ok(2));
+
+        println!("Asserting that evaluation for 426 fails.");
+
+        assert_eq!(sigma.eval(426), Err(PermutationError::ArgOutOfRangeError));
+    }
+
+    #[test]
+    fn identity_test() {
+        println!("Creating identity function in S_3.");
+        
+        assert_eq!(
+            identity(3),
+            Permutation::new(
+                vec![1, 2, 3]
+            )
+        );
+
+        println!("Asserting that suitable error is returned when attempting to create identity for S_0.");
+    }
+
 
     // -------------------- end of test for permutations module -------------------
 

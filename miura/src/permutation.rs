@@ -88,6 +88,21 @@ impl Permutation {
     }
 }
 
+/*
+* Returns the identity function on the set {1, ..., n} 
+* which is the neutral element of the symmetric group S_n.
+*/
+pub fn identity(n: usize) -> Result<Permutation, PermutationError> {
+    // catch special case that n is 0: S_0 does not exist
+    if n==0 {
+        return Err(PermutationError::EmptyImageVectorError);
+    }
+    
+    Permutation::new(
+        (1..(n+1)).collect::<Vec<usize>>()
+    )
+}
+
 #[derive(Debug, PartialEq)]
 pub enum PermutationError {
     /*
