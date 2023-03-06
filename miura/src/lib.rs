@@ -604,6 +604,29 @@ mod tests {
         println!("Asserting that suitable error is returned when attempting to create identity for S_0.");
     }
 
+    #[test]
+    fn inverse_test() {
+        println!("Computing the inverse of a non-identity S_5 permutation.");
+
+        let sigma = Permutation::new(
+            vec![3, 4, 1, 5, 2]
+        ).unwrap();
+
+        assert_eq!(
+            sigma.inverse(),
+            Permutation::new(
+                vec![3, 5, 1, 2, 4]
+            ).unwrap()
+        );
+
+        println!("Computing the inverse of the identity S_5 permutation.");
+
+        assert_eq!(
+            identity(5).unwrap().inverse(),
+            identity(5).unwrap()
+        );
+    }
+
 
     // -------------------- end of test for permutations module -------------------
 

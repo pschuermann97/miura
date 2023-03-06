@@ -86,6 +86,37 @@ impl Permutation {
             Ok(self.images[i - 1])
         }
     }
+
+    /*
+    * Computes the inverse of the permutation.
+    */
+    pub fn inverse(self: &Self) -> Permutation {
+        let mut inverse_images = Vec::<usize>::new();
+        let n = self.images.len();
+        
+        // compute image under inverse separately for every i in {1, ..., n}
+        for i in 1..(n+1) {
+            /*
+            * Find element in {1, ..., n} that maps to i 
+            * by looking for index j in the image vector that stores i.
+            */
+            for j in 0..n {
+                if self.images[j] == i {
+                    /*
+                    * Permutations in S_n map from and to the set {1, ..., n}
+                    * but the indices of a vector of length n range from 0 to n-1.
+                    */
+                    inverse_images.push(j+1);
+
+                    break; // can stop looking once we found the right j
+                }
+            }
+        }
+
+        Permutation::new(
+            inverse_images
+        ).unwrap() // if a mapping is a permutation then so is its inverse -> always Ok-variant
+    }
 }
 
 /*
