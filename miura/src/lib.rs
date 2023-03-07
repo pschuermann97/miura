@@ -790,5 +790,44 @@ mod tests {
                 Cycle::new(vec![4], 4).unwrap()
             ]
         );
+
+        println!("Compute cycle form of a cycle given in permutation form.");
+
+        let sigma1 = Permutation::new(
+            vec![2, 3, 4, 5, 6, 7, 1]
+        ).unwrap();
+
+        assert_eq!(
+            sigma1.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 2, 3, 4, 5, 6, 7], 7).unwrap()
+            ]
+        );
+
+        let sigma2 = Permutation::new(
+            vec![5, 3, 4, 1, 6, 2]
+        ).unwrap();
+
+        assert_eq!(
+            sigma2.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 5, 6, 2, 3, 4], 6).unwrap()
+            ]
+        );
+
+        println!("Testing for permutation with more than one cycle.");
+
+        let rho = Permutation::new(
+            vec![5, 6, 3, 1, 4, 2]
+        ).unwrap();
+
+        assert_eq!(
+            rho.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 5, 4], 6).unwrap(),
+                Cycle::new(vec![2, 6], 6).unwrap(),
+                Cycle::new(vec![3], 6).unwrap()
+            ]
+        );
     }
 }
