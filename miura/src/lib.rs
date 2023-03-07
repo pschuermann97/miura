@@ -704,4 +704,33 @@ mod tests {
         let scaled_vector3 = scale_vector(&vec, 0);
         assert_eq!(scaled_vector3, vec![0, 0, 0]);
     }
+
+    #[test]
+    fn test_compose() {
+        let sigma = transposition(4, 2, 3).unwrap();
+        let tau = transposition(4, 1, 2).unwrap();
+
+        println!("Composing two S_4 permutations.");
+
+        assert_eq!(
+            compose(&sigma, &tau),
+            Permutation::new(
+                vec![3, 1, 2, 4]
+            )
+        );
+
+        println!("Composing permutation with identity.");
+
+        assert_eq!(
+            compose(&sigma, &identity(4).unwrap()),
+            Ok(sigma)
+        );
+
+        println!("Asserting that attempting to compose two permutations from different symmetric groups results in an error.");
+
+        assert_eq!(
+            compose(&tau, &identity(5).unwrap()),
+            Err(PermutationError::DomainRangeSizeMismatchError)
+        );
+    }
 }

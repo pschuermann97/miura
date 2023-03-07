@@ -157,6 +157,33 @@ pub fn transposition(n: usize, i: usize, j: usize) -> Result<Permutation, Permut
     }
 }
 
+/*
+* Creates the composition sigma after tau of the two passed permutations sigma and tau. 
+*/ 
+pub fn compose(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, PermutationError> {
+    // compute size of set that sigma operates on
+    let n = sigma.n();
+    
+    /*
+    * If domain/range sizes for sigma and tau do not match,
+    * the two permutations cannot be composed meaningfully.
+    */
+    if n != tau.n() {
+        return Err(PermutationError::DomainRangeSizeMismatchError);
+    }
+
+    Permutation::new(
+        (1..(n+1)).collect::<Vec<usize>>().iter() // iterator over (1, ..., n)
+            // 1 <= tau(x) <= n is guaranteed since tau is a permutation
+            .map( |x| sigma.eval( 
+                    // 1 <= x <= n is guaranteed
+                    tau.eval(*x).unwrap() 
+                ).unwrap() 
+            )
+            .collect::<Vec<usize>>()
+    )
+}
+
 #[derive(Debug, PartialEq)]
 pub enum PermutationError {
     /*
@@ -176,6 +203,9 @@ pub enum PermutationError {
     /*
     * Occurs when attempting to create a permutation from an empty vector of images.
     */
-    EmptyImageVectorError
-
+    EmptyImageVectorError,
+    /*
+    * Occurs when attempting to compose two permutations from different symmetric groups.
+    */
+    DomainRangeSizeMismatchError
 }
