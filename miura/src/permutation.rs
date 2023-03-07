@@ -184,6 +184,16 @@ pub fn compose(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, Pe
     )
 }
 
+/*
+* Returns the composition tau after sigma after inverse(tau).
+*/
+pub fn conjugate(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, PermutationError> {
+    compose(
+        &(compose(tau, sigma).unwrap()),
+        &tau.inverse()
+    )
+}
+
 #[derive(Debug, PartialEq)]
 pub enum PermutationError {
     /*

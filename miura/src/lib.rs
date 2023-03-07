@@ -660,6 +660,50 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_compose() {
+        let sigma = transposition(4, 2, 3).unwrap();
+        let tau = transposition(4, 1, 2).unwrap();
+
+        println!("Composing two S_4 permutations.");
+
+        assert_eq!(
+            compose(&sigma, &tau),
+            Permutation::new(
+                vec![3, 1, 2, 4]
+            )
+        );
+
+        println!("Composing permutation with identity.");
+
+        assert_eq!(
+            compose(&sigma, &identity(4).unwrap()),
+            Ok(sigma)
+        );
+
+        println!("Asserting that attempting to compose two permutations from different symmetric groups results in an error.");
+
+        assert_eq!(
+            compose(&tau, &identity(5).unwrap()),
+            Err(PermutationError::DomainRangeSizeMismatchError)
+        );
+    }
+
+    #[test]
+    fn conjugate_test() {
+        println!("Conjugating an S_4 transposition with another S_4 permutation.");
+
+        let tau = Permutation::new(
+            vec![1, 3, 4, 2]
+        ).unwrap();
+        let sigma = transposition(4, 2, 3).unwrap();
+
+        assert_eq!(
+            conjugate(&sigma, &tau),
+            transposition(4, 3, 4)
+        );
+    }
+
 
     // -------------------- end of tests for permutations module -------------------
 
@@ -703,34 +747,5 @@ mod tests {
 
         let scaled_vector3 = scale_vector(&vec, 0);
         assert_eq!(scaled_vector3, vec![0, 0, 0]);
-    }
-
-    #[test]
-    fn test_compose() {
-        let sigma = transposition(4, 2, 3).unwrap();
-        let tau = transposition(4, 1, 2).unwrap();
-
-        println!("Composing two S_4 permutations.");
-
-        assert_eq!(
-            compose(&sigma, &tau),
-            Permutation::new(
-                vec![3, 1, 2, 4]
-            )
-        );
-
-        println!("Composing permutation with identity.");
-
-        assert_eq!(
-            compose(&sigma, &identity(4).unwrap()),
-            Ok(sigma)
-        );
-
-        println!("Asserting that attempting to compose two permutations from different symmetric groups results in an error.");
-
-        assert_eq!(
-            compose(&tau, &identity(5).unwrap()),
-            Err(PermutationError::DomainRangeSizeMismatchError)
-        );
     }
 }
