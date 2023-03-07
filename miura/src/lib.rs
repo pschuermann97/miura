@@ -627,8 +627,34 @@ mod tests {
         );
     }
 
+    #[test]
+    fn transposition_test() {
+        println!("Creating transposition in S_5.");
 
-    // -------------------- end of test for permutations module -------------------
+        assert_eq!(
+            transposition(5, 2, 3),
+            Permutation::new(
+                vec![1, 3, 2, 4, 5]
+            )
+        );
+
+        println!("Asserting that order of i and j parameters does not matter.");
+
+        assert_eq!(
+            transposition(5, 2, 3),
+            transposition(5, 3, 2)
+        );
+
+        println!("Creating identity on S_6 via transposition function.");
+
+        assert_eq!(
+            transposition(6, 1, 1),
+            identity(6)
+        );
+    }
+
+
+    // -------------------- end of tests for permutations module -------------------
 
 
 

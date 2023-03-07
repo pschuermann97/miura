@@ -134,6 +134,29 @@ pub fn identity(n: usize) -> Result<Permutation, PermutationError> {
     )
 }
 
+/*
+* Creates a permutation in S_n that swaps the passed i and j
+* and otherwise behaves like the identity.
+*/
+pub fn transposition(n: usize, i: usize, j: usize) -> Result<Permutation, PermutationError> {
+    if i == j {
+        return identity(n);
+    } else {
+        Permutation::new(
+            (1..(n+1)).collect::<Vec<usize>>().iter() // iterator over vector (1, ..., n)
+                .map( |x| if *x == i {
+                            j
+                        } else if *x == j {
+                            i
+                        } else {
+                            *x
+                        }
+                )
+                .collect::<Vec<usize>>()
+        )
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum PermutationError {
     /*
