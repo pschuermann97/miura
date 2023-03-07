@@ -651,6 +651,13 @@ mod tests {
             transposition(6, 1, 1),
             identity(6)
         );
+
+        println!("Asserting that we cannot swap values that are outside the domain (more precisely, transposition(5, 2, 426) returns an error).");
+
+        assert_eq!(
+            transposition(5, 2, 426),
+            Err(PermutationError::ImageOutOfRangeError)
+        );
     }
 
 
