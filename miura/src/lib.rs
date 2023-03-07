@@ -537,7 +537,7 @@ mod tests {
         let image_vec2 = vec![2, 6, 4, 1, 3];
         assert_eq!(
             Permutation::new(image_vec2),
-            Err(PermutationError::ImageOutOfRangeError)
+            Err(PermutationError::NotBijectiveError)
         );
 
         println!("Attempt to create a permutation that is not bijective.");
@@ -656,7 +656,7 @@ mod tests {
 
         assert_eq!(
             transposition(5, 2, 426),
-            Err(PermutationError::ImageOutOfRangeError)
+            Err(PermutationError::NotBijectiveError)
         );
     }
 
@@ -704,6 +704,33 @@ mod tests {
         );
     }
 
+    #[test]
+    fn sign_test() {
+        println!("Computing the sign of the identity function.");
+
+        assert_eq!(identity(17).unwrap().sign(), 1);
+
+        println!("Computing the sign of a transposition.");
+
+        assert_eq!(transposition(19, 13, 7).unwrap().sign(), -1);
+
+        println!("Computing the sign of an odd permutation (composition of three transpositions).");
+
+        assert_eq!(
+            compose(
+                &(
+                    compose(
+                        &transposition(426, 12, 14).unwrap(),
+                        &transposition(426, 12, 67).unwrap()
+                    ).unwrap()
+                ),
+                &transposition(426, 234, 348).unwrap()
+            ).unwrap().sign(),
+
+            -1
+        )
+    }
+
 
     // -------------------- end of tests for permutations module -------------------
 
@@ -747,5 +774,21 @@ mod tests {
 
         let scaled_vector3 = scale_vector(&vec, 0);
         assert_eq!(scaled_vector3, vec![0, 0, 0]);
+    }
+
+    #[test]
+    fn test_cycle_form() {
+        println!("Compute cycle form of a transposition from S_4.");
+
+        let tau = transposition(4, 2, 3).unwrap();
+
+        assert_eq!(
+            tau.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1], 4).unwrap(),
+                Cycle::new(vec![2, 3], 4).unwrap(),
+                Cycle::new(vec![4], 4).unwrap()
+            ]
+        );
     }
 }

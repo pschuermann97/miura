@@ -3,6 +3,7 @@
 */
 
 use crate::poly::Modulus;
+use std::collections::HashSet;
 
 
 /*
@@ -50,4 +51,35 @@ pub fn shift_vector(vec: &Vec<i32>, amt: usize) -> Vec<i32> {
 */
 pub fn scale_vector(vec: &Vec<i32>, amt: i32) -> Vec<i32> {
     vec.iter().map(|x| amt * x).collect::<Vec<i32>>()
+}
+
+/*
+* Iterate over vector and assure that
+* (i)   all numbers occur at most once
+* (ii)  all occuring numbers are in {1, ..., n}
+*/
+pub fn check_unique_in_1_to_n(vec: &Vec<usize>, n: usize) -> bool {
+    /*
+    * For the first requirement, store all numbers seen so far in a hash set
+    * and check the set for containment of encountered number.
+    */
+
+    let mut occured_numbers: HashSet<usize> = HashSet::new();
+
+    for num in vec.iter() {
+        // if you encounter a number for the second time: described mapping is not bijective
+        if occured_numbers.contains(num) {
+            return false;
+        } 
+        // otherwise: check whether number is within range and remember it
+        else {
+            if 1 <= *num && *num <= n {
+                occured_numbers.insert(*num);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }

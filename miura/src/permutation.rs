@@ -1,4 +1,5 @@
-use std::collections::HashSet; // for ensuring bijectivity
+use crate::vec_helper::check_unique_in_1_to_n;
+use std::collections::HashSet;
 
 /*
 * A struct that models a permutation from some symmetric group S_n,
@@ -9,6 +10,19 @@ pub struct Permutation {
     images: Vec<usize>
 }
 
+/*
+* Models a cycle in a permutation sigma, 
+* i.e. a sequence of numbers i_1, ..., i_r 
+* with sigma(i_k) = i_(k+1) and sigma(i_r) = i_1.
+*/
+#[derive(Debug, PartialEq)]
+pub struct Cycle {
+    elements: Vec<usize>
+}
+
+
+
+
 impl Permutation {
     /*
     * Constructs a new permutation from S_n from the passed number vector of length n.
@@ -16,11 +30,13 @@ impl Permutation {
     * if it does not, an appropiate error is returned.
     */
     pub fn new(vec: Vec<usize>) -> Result<Permutation, PermutationError> {
+        let n = vec.len();
+        
         /*
         * Catching edge case:
         * no meaningful permutation can be created from an empty image vector.
         */
-        if vec.len() == 0 {
+        if n == 0 {
             return Err(PermutationError::EmptyImageVectorError);
         }
         
@@ -29,29 +45,12 @@ impl Permutation {
         * (i)   all numbers occur at most once
         * (ii)  all occuring numbers are in {1, ..., n}
         *
-        * For the first requirement, store all numbers seen so far in a hash set
-        * and check the set for containment of encountered number.
-        *
         * (i) ensures injectivity of the mapping described by the vector
         * and since the domain and codomain of the mapping have equal size,
         * this already concludes surjectivity and thus bijectivity.
         */
-
-        let mut occured_numbers: HashSet<usize> = HashSet::new();
-
-        for num in vec.iter() {
-            // if you encounter a number for the second time: described mapping is not bijective
-            if occured_numbers.contains(num) {
-                return Err(PermutationError::NotBijectiveError);
-            } 
-            // otherwise: check whether number is within range and remember it
-            else {
-                if 1 <= *num && *num <= vec.len() {
-                    occured_numbers.insert(*num);
-                } else {
-                    return Err(PermutationError::ImageOutOfRangeError);
-                }
-            }
+        if !check_unique_in_1_to_n(&vec, n) {
+            return Err(PermutationError::NotBijectiveError);
         }
 
         // now we know that the passed vector models a bijective mapping from {1, ..., n} to {1, ..., n}
@@ -117,7 +116,122 @@ impl Permutation {
             inverse_images
         ).unwrap() // if a mapping is a permutation then so is its inverse -> always Ok-variant
     }
+
+    /*
+    * Computes the sign of the permutation sigma 
+    * which is the number of inversions in sigma.
+    * 
+    * An inversion is a tuple (i, j) of numbers in {1, ..., n}
+    * where i < j but sigma(i) > sigma(j) 
+    */
+    pub fn sign(self: &Self) -> i32 {
+        let mut inversions = 0;
+        let n = self.n();
+
+        for i in 1..(n+1) {
+            for j in i..(n+1) {
+                if self.eval(i).unwrap() > self.eval(j).unwrap() {
+                    inversions += 1;
+                }
+            }
+        }
+
+        if inversions % 2 == 0 { 1 } else { -1 }
+    }
+
+    /*
+    * Computes the cycle form of some permutation sigma from its table form.
+    * So instead of a vector of images, the permutation is represented as a vector of Cycles,
+    * where each element from the set {1, ..., n} appears in exactly one cycle.
+    */ 
+    pub fn to_cycle_form(self: &Self) -> Vec<Cycle> {
+        // store set size for readability
+        let n = self.n();
+        
+        // create new empty vector to store the computed cycles
+        let mut cycles = Vec::<Cycle>::new();
+        
+        // create hash set that keeps track of the numbers that already are in a cycle
+        let mut nums_in_cycles = HashSet::<usize>::new();
+
+        for i in 1..(n+1) {
+            /*
+            * If number i is not already contained in a cycle:
+            * compute the cycle that starts with i.
+            */
+            if !nums_in_cycles.contains(&i) {
+                /*
+                * Create vector that contains the elements of the currently computed cycle.
+                * Initially, it only contains i.
+                */
+                let mut current_cycle_elements = vec![i];
+                
+                // mark i as being contained in a cycle
+                nums_in_cycles.insert(i);
+
+                // compute sigma(i)
+                let mut current = self.eval(i).unwrap();
+
+                /*
+                * Until i is reached again: 
+                * iteratively add the current number to the currently computed cycle,
+                * mark it as being contained in a cycle
+                * and evaluate sigma for it.
+                * Once i is reached again, the cycle is complete.
+                */
+                while current != i {
+                    current_cycle_elements.push(current);
+
+                    nums_in_cycles.insert(current);
+
+                    current = self.eval(current).unwrap();
+                }
+
+                // add completed cycle to the vector of cycles.
+                cycles.push(Cycle::new(current_cycle_elements, n).unwrap());
+            }
+        }
+
+        // vector of all cycles of the permutation is returned
+        cycles
+    }
+
+    pub fn to_string() {
+        // compute cycle form
+
+        // filter length-1 cycles
+
+        // print remaining cycles
+    }
 }
+
+
+
+impl Cycle {
+    /*
+    * Constructs a new cycle in S_n from the passed vector of non-negative numbers.
+    * 
+    * If the passed vector does not represent a proper cycle, an error is returned.
+    */
+    pub fn new(vec: Vec<usize>, n: usize) -> Result<Cycle, PermutationError> {
+        if check_unique_in_1_to_n(&vec, n) {
+            Ok(
+                Cycle {
+                    elements: vec
+                }
+            )
+        } else {
+            Err(PermutationError::NoValidCycleError)
+        }
+    }
+    
+    pub fn length(self: &Self) -> usize {
+        self.elements.len()
+    }
+}
+
+
+
 
 /*
 * Returns the identity function on the set {1, ..., n} 
@@ -210,6 +324,12 @@ pub enum PermutationError {
     * Returned upon attempt to create a permutation that is not bijective.
     */
     NotBijectiveError,
+    /*
+    * Returned upon attempt to construct a cycle 
+    * that contains numbers outside {1, ..., n}
+    * or the same number twice.
+    */
+    NoValidCycleError,
     /*
     * Occurs when attempting to create a permutation from an empty vector of images.
     */
