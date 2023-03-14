@@ -2,6 +2,7 @@
 mod poly;
 mod vec_helper;
 mod permutation;
+mod series;
 
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
@@ -64,6 +65,8 @@ mod tests {
     use crate::vec_helper::*;
 
     use crate::permutation::*;
+
+    use crate::series::*;
 
     #[test]
     fn test_euclid() {
@@ -829,5 +832,34 @@ mod tests {
                 Cycle::new(vec![3], 6).unwrap()
             ]
         );
+    }
+
+
+
+    // ------------------ end of tests for permutation module -----------------
+
+
+
+    // ------------------ tests for power series module -----------------------
+
+
+
+    #[test]
+    fn exp_test() {
+        println!("Evaluating the exponential function for some positive integer.");
+
+        // precision of 14
+        assert!(exp(3.0) >= 20.08553692318766);
+        assert!(exp(3.0) < 20.08553692318767);
+
+        println!("Evaluating the exponential function for 0.");
+
+        assert_eq!(exp(0.0), 1.0);
+
+        println!("Evaluating the exponential function for some negative integer.");
+
+        panic!("Can't be tested yet due to lack of floating point precision!");
+
+        println!("Evaluating the exponential function for some negative integers.");
     }
 }
