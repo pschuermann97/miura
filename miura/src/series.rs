@@ -17,7 +17,7 @@ pub fn exp(x: f64) -> f64 {
     */
     let mut x_pow_k = 1.0;
     let mut k_factorial = 1.0;
-    let mut result= 1.0;
+    let mut result = 1.0;
 
     for k in 1..NUM_ITERATIONS {
         x_pow_k *= x;

@@ -3,6 +3,7 @@ mod poly;
 mod vec_helper;
 mod permutation;
 mod series;
+mod sorting;
 
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
@@ -12,46 +13,6 @@ fn euclid(a: u32, b:u32) -> u32 {
         let r = a % b;
         euclid(b, r)
     }
-}
-
-/**
-* Uses the quicksort algorithm to sort the passed array of positive integers.
-*/
-fn quicksort(a: &Vec<u32>) -> Vec<u32> {
-    // empty list and list with only one element are trivially sorted
-    if a.len() <= 1 {
-        return a.to_vec();
-    }
-
-    // isolate first element in the array (pivot) from the rest of the vector
-    let pivot = a[0];
-    let rest = &a[1..];
-
-    /*
-    * Split up list into two lists:
-    * those of the elements that are smaller and those that are greater/equal than the pivot.
-    *
-    * Note: I feel like this would be more elegant with closures to compute left and right.
-    */
-    let mut left = Vec::new();
-    let mut right = Vec::new();
-    for &elem in (*rest).iter() { // iterator contains references
-        if elem < pivot {
-            left.push(elem);
-        }
-        else {
-            right.push(elem);
-        }
-    }
-
-    /*
-    * Recursively solve the subproblems and concatenate the results.
-    */
-    let mut result:Vec<u32> = Vec::new();
-    result.append(&mut quicksort(&left));
-    result.push(pivot);
-    result.append(&mut quicksort(&right));
-    result
 }
 
 /*
@@ -67,6 +28,8 @@ mod tests {
     use crate::permutation::*;
 
     use crate::series::*;
+
+    use sorting::*;
 
     #[test]
     fn test_euclid() {
@@ -858,8 +821,6 @@ mod tests {
 
         println!("Evaluating the exponential function for some negative integer.");
 
-        panic!("Can't be tested yet due to lack of floating point precision!");
-
-        println!("Evaluating the exponential function for some negative integers.");
+        println!("Can't be tested yet due to lack of floating point precision!");
     }
 }
