@@ -20,20 +20,17 @@ pub fn quicksort(a: &Vec<u32>) -> Vec<u32> {
 
     /*
     * Split up list into two lists:
-    * those of the elements that are smaller and those that are greater/equal than the pivot.
-    *
-    * Note: I feel like this would be more elegant with closures to compute left and right.
+    * those of the elements that are smaller/equal and those that are greater than the pivot.
     */
-    let mut left = Vec::new();
-    let mut right = Vec::new();
-    for &elem in (*rest).iter() { // iterator contains references
-        if elem < pivot {
-            left.push(elem);
-        }
-        else {
-            right.push(elem);
-        }
-    }
+    let mut left: Vec<u32> = (*rest).iter() // iterator over a vector to references to unsigned integers
+        .filter(|&&x| x <= pivot) // the actual filtering
+        /*
+        * We still have a structure containing references to integers.
+        * Need to turn it into a vector containing unsigned integers for the collect-call to work.
+        */
+        .map(|x| *x)
+        .collect();
+    let mut right: Vec<u32> = (*rest).iter().filter(|&&x| x > pivot).map(|x| *x).collect();
 
     /*
     * Recursively solve the subproblems and concatenate the results.
