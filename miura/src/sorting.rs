@@ -5,6 +5,58 @@
 use std::collections::HashMap; // for counting occurences in counting sort
 
 /*
+* Incremental sorting algorithm.
+* 
+* Note that this implementation works on a mutable reference to the input array
+* and thus changes the input array instead of creating a sorted version of it.
+*/
+pub fn insertion_sort(a: &mut Vec<u32>) {
+    /*
+    * Insert the j-th element within the first j ones in the vector.
+    * Invariant: after the iteration of this loop for some j, 
+    * the first j elements in the vector are sorted.
+    */
+    'inserting_elements: for j in 1..(a.len()) {
+        let key = a[j]; // save the j-th element in the vector in some temporary storage
+
+        /*
+        * Starting with i = j-1, let the i-th element move one slot to the right
+        * if it is greater than key.
+        * Else, insert key at position i in the vector.
+        *
+        * Note: if a[j] is the greatest element among the first j ones,
+        * no element is moved and key is immediately inserted at a[j-1 + 1] again. 
+        */
+        let mut i = j-1;
+        while i >= 0 && a[i] > key {
+            a[i+1] = a[i];
+            if i > 0 { // i is an unsigned integer since used to index an array. Need to prevent subtraction with overflow.
+                i -= 1;
+            } else { 
+                /* 
+                * special case i = 0 
+                * (cannot decrease i any further and now 
+                * check whether to insert key in front of or behind a[0])
+                */
+                if a[0] > key {
+                    a[1] = a[0];
+                    a[0] = key;
+                } else {
+                    a[1] = key;
+                }
+
+                /* 
+                * In the special case i=0 we are already done inserting a[j] at this point
+                * and thus continue with inserting the next element (i.e. the next iteration of the outer loop).
+                */
+                continue 'inserting_elements;
+            }
+        }
+        a[i+1] = key;
+    }
+}
+
+/*
 * Uses the quicksort algorithm to sort the passed array of positive integers.
 *
 * Quicksort is a Divide-and-Conquer algorithm which splits up the passed array a

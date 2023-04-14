@@ -73,10 +73,22 @@ mod tests {
         println!("Sorting test vectors with countingsort.");
 
         let vector1_countingsorted = counting_sort(&vector1, 5);
-        assert_eq!(vector1_countingsorted, Ok(vector1_sorted));
+        assert_eq!(vector1_countingsorted, Ok(vector1_sorted.clone()));
 
         let vector2_countingsorted = counting_sort(&vector2, 426);
-        assert_eq!(vector2_countingsorted, Ok(vector2_sorted));
+        assert_eq!(vector2_countingsorted, Ok(vector2_sorted.clone()));
+
+        println!("Sorting test vectors with insertion sort.");
+
+        // need to clone test vectors since insertion sort works on mutable references
+        let mut vector1_clone = vector1.clone();
+        let mut vector2_clone = vector2.clone();
+
+        insertion_sort(&mut vector1_clone);
+        assert_eq!(vector1_clone, vector1_sorted);
+
+        insertion_sort(&mut vector2_clone);
+        assert_eq!(vector2_clone, vector2_sorted);
     }
 
 
