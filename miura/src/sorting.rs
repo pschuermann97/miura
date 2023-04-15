@@ -56,6 +56,18 @@ pub fn insertion_sort(a: &mut Vec<u32>) {
     }
 }
 
+/*
+* Uses the merge sort algorithm to sort the passed vector of non-negative integers.
+*
+* Merge sort is a classic divide-and-conquer algorithm, 
+* which works by splitting the instance at hand into two smaller sub-instances,
+* then solving those recursively 
+* and combining the two individual solutions into a solution for the initial instance.
+* 
+* In case of merge sort this combining means that two sorted vectors of integers
+* are combined into one by iterating through them simultaneously but independently,
+* and always putting the smaller one of the current two elements into the result vector.
+*/
 pub fn merge_sort(a: &Vec<u32>) -> Vec<u32> {
     // array of length 0 or 1 is trivially sorted
     if a.len() <= 1 {
