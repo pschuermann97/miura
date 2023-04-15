@@ -56,6 +56,71 @@ pub fn insertion_sort(a: &mut Vec<u32>) {
     }
 }
 
+pub fn merge_sort(a: &Vec<u32>) -> Vec<u32> {
+    // array of length 0 or 1 is trivially sorted
+    if a.len() <= 1 {
+        return a.to_vec();
+    }
+
+    /* 
+    * Split input vector into two vectors
+    * Need to use references here to have a type whose size is known at compile time.
+    */
+    let m = a.len() / 2; // integer division since both values are integers
+    let left = &a[..m];
+    let right = &a[m..];
+    
+    // recursively sort the two subvectors and merge the result
+    merge(&merge_sort( &(left.to_vec()) ), &merge_sort( &(right.to_vec()) ))
+}
+
+/*
+* Merges the two sorted input vectors into one vector.
+* Does not check whether the input arrays are actually sorted
+* and thus is not exposed as a part of the public API.  
+* 
+* Iterates through the left and right vector (with two independent cursors)
+* and always inserts the smaller of the current two elements into the result vector.
+*/
+fn merge(left: &Vec<u32>, right: &Vec<u32>) -> Vec<u32> {
+    // define the two independent cursors
+    let mut left_current = 0;
+    let mut right_current = 0;
+
+    // define empty result vector
+    let mut result = Vec::<u32>::new();
+
+    // while both vectors have some uninserted elements left
+    while left_current <= left.len() - 1 && right_current <= right.len() - 1 {
+        /*
+        * Compare the two current elements,
+        * insert smaller one
+        * and move cursor in respective array.
+        */
+        if left[left_current] <= right[right_current] {
+            result.push(left[left_current]);
+            left_current += 1;
+        } else {
+            result.push(right[right_current]);
+            right_current += 1;
+        }
+    }
+
+    /*
+    * After end of while loop:
+    * one of the input vectors is fully inserted to the result vector.
+    * Need to insert the remaining elements of the other input vector as well.
+    */
+    for i in left_current..left.len() {
+        result.push(left[i]);
+    }
+    for j in right_current..right.len() {
+        result.push(right[j]);
+    }
+
+    result
+}
+
 /*
 * Uses the quicksort algorithm to sort the passed array of positive integers.
 *
@@ -146,7 +211,7 @@ pub fn counting_sort(a: &Vec<u32>, s: u32) -> Result<Vec<u32>, SortingInstanceEr
 }
 
 /*
-* Struct modelling any error that could occur from a unsuitable input to a sorting algorithm.
+* Struct modelling any error that could occur from an unsuitable input to a sorting algorithm.
 */
 #[derive(Debug, PartialEq)]
 pub struct SortingInstanceError;
