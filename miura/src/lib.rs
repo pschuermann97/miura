@@ -985,6 +985,104 @@ mod tests {
         assert_eq!(test_matrix.is_zero_column(0), false);
     }
 
+    #[test]
+    fn test_first_row_without_zero_at_beginning_from() {
+        println!("Creating 3x3 test matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 1.0, 0.0]
+            ]
+        );
+
+        println!("Searching for non zero elements in different columns.");
+
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(0, 0), Some(0));
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(0, 1), None);
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(1, 0), Some(2));
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(2, 0), None);
+    }
+
+    #[test]
+    fn test_first_non_zero_row_beginning_from() {
+        println!("Creating 5x3 test matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 426.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+            ]
+        );
+
+        println!("Searching for next non-zero row from various different starting rows.");
+
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(0), Some(0));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(1), Some(2));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(2), Some(2));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(3), None);
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(4), None);
+    }
+
+    #[test]
+    fn test_to_upper_triangular() {
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix1 = Matrix::new(
+            vec![
+                vec![1.0, 1.0, -1.0, 0.0],
+                vec![2.0, 1.0, 0.0, 1.0],
+                vec![3.0, 1.0, 2.0, 0.0]
+            ]
+        );
+
+        println!("Assert that upper triangular form of the first test matrix is correctly computed.");
+
+        test_matrix1.to_upper_triangular();
+        assert_eq!(
+            test_matrix1,
+            Matrix::new(
+                vec![
+                    vec![1.0, 1.0, -1.0, 0.0],
+                    vec![0.0, 1.0, -2.0, -1.0],
+                    vec![0.0, 0.0, 1.0, -2.0]
+                ]
+            )
+        );
+
+        println!("Creating 3x5 test matrix.");
+
+        let mut test_matrix2 = Matrix::new(
+            vec![
+                vec![3.0, -3.0, 3.0, 6.0, 3.0],
+                vec![1.0, -1.0, -3.0, 0.0, -8.0],
+                vec![2.0, -2.0, -2.0, 2.0, 5.0]
+            ]
+        );
+
+        println!("Assert that upper triangular form of the second test matrix is correctly computed.");
+
+        test_matrix2.to_upper_triangular();
+        assert_eq!(
+            test_matrix2,
+            Matrix::new(
+                vec![
+                    vec![1.0, -1.0, -3.0, 0.0, 8.0],
+                    vec![0.0, 0.0, 1.0, 0.5, 5.5],
+                    vec![0.0, 0.0, 0.0, 0.0, -36.0]
+                ]
+            )
+        );
+    }
+
+
+
+    // ------------------ end of tests for matrix module -----------------------------
+
 
 
     // ------------------ tests for power series module -----------------------
