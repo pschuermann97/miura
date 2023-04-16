@@ -4,6 +4,7 @@ mod vec_helper;
 mod permutation;
 mod series;
 mod sorting;
+mod matrix;
 
 /**
 * Computes and returns the greatest common divisor of the input numbers a and b.
@@ -30,6 +31,8 @@ mod tests {
     use crate::series::*;
 
     use sorting::*;
+
+    use matrix::*;
 
     #[test]
     fn test_euclid() {
@@ -838,6 +841,32 @@ mod tests {
 
 
     // ------------------ end of tests for permutation module -----------------
+
+
+
+    // ------------------ tests for matrix module -----------------------------
+
+
+    #[test]
+    fn rows_and_columns_test() {
+        println!("Creating test 3x3 matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 5.0, 6.0],
+                vec![7.0, 8.0, 426.0]
+            ]
+        );
+
+        println!("Asserting that 2nd row is extracted correctly.");
+
+        assert_eq!(test_matrix.row(1), vec![4.0, 5.0, 6.0]);
+
+        println!("Asserting that 3rd column is extracted correctly.");
+
+        assert_eq!(test_matrix.column(2), vec![3.0, 6.0, 426.0]);
+    }
 
 
 
