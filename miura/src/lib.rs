@@ -1047,8 +1047,8 @@ mod tests {
             test_matrix1,
             Matrix::new(
                 vec![
-                    vec![1.0, 1.0, -1.0, 0.0],
-                    vec![0.0, 1.0, -2.0, -1.0],
+                    vec![1.0, 0.0, 0.0, 3.0],
+                    vec![0.0, 1.0, 0.0, -5.0],
                     vec![0.0, 0.0, 1.0, -2.0]
                 ]
             )
@@ -1071,9 +1071,35 @@ mod tests {
             test_matrix2,
             Matrix::new(
                 vec![
-                    vec![1.0, -1.0, -3.0, 0.0, 8.0],
-                    vec![0.0, 0.0, 1.0, 0.5, 5.5],
-                    vec![0.0, 0.0, 0.0, 0.0, -36.0]
+                    vec![1.0, -1.0, 0.0, 1.5, 0.0],
+                    vec![0.0, 0.0, 1.0, 0.5, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0, 1.0]
+                ]
+            )
+        );
+
+        println!("Creating 4x5 test matrix.");
+
+        let mut test_matrix3 = Matrix::new(
+            vec![
+                vec![1.0, 1.0, 1.0, 0.0, 3.0],
+                vec![-11.0, 1.0, 9.0, 2.0, -15.0],
+                vec![3.0, 0.0, -3.0, 0.0, 3.0],
+                vec![8.0, 2.0, -4.0, -1.0, 13.0]
+            ]
+        );
+
+        println!("Assert that upper triangular form of the third test matrix is correctly computed.");
+
+        test_matrix3.to_upper_triangular();
+        assert_eq!(
+            test_matrix3,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, -1.0, 0.0, 0.0],
+                    vec![0.0, 1.0, 2.0, 0.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 1.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0, 1.0]
                 ]
             )
         );

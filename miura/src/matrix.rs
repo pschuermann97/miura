@@ -114,38 +114,58 @@ impl Matrix {
 
     /*
     * Transforms the matrix to its upper triangular form.
+    * 
+    * This is done by transforming each row into a pivot row.
+    * A pivot row is a row that starts with any number of zeros, followed by a non-zero pivot element and then arbitrary elements.
+    * The pivot position of its pivot element.
+    * A pivot row is called normalized if its pivot element is a one.
+    *
+    * A matrix is an upper triangular matrix if its rows are ordered by their pivot positions, ascendingly.
     */
     pub fn to_upper_triangular(self: &mut Self) {
-        'column_elimination: for current_column in 0..(self.num_rows()) {
+        let mut current_pivot_position = 0;
+
+        'pivot_row_creation: for current_row in 0..(self.num_rows()) {
             /*
-            * Check whether there is a row that has a non-zero number in the current column
-            * on/below the diagonal.
+            * Search for pivot position in current row.
+            * If reached end of row : 
+            * no pivot position exists in current row, continue with next row
+            * (start looking for pivot column from the main diagonal).
             */
-            match self.next_row_without_zero_at_beginning_from(current_column, current_column) {
-                Some(k) => {
-                    // swap row with index current_column and the found row
-                    self.swap_rows(current_column, k);
-                    
-                    // create a 1 on the diagonal
-                    self.scale_row(
-                        current_column, // row index (= column index)
-                        1.0 / self.rows[current_column][current_column]
-                    );
-
-                    // eliminate all elements below the diagonal
-                    for r in (current_column+1)..(self.rows.len()) {
-                        self.add_scalar_multiple(
-                            r, // row where entry in column current_column should be eliminated
-                            - self.rows[r][current_column], // scale factor for current_column in order to do the elimination via rank-preserving addition operation
-                            current_column
-                        );
-
-                        Self::display_matrix(self);
-                    }
+            while self.next_row_without_zero_at_beginning_from(current_pivot_position, current_row) == None { 
+                current_pivot_position += 1;
+                // if reached end of row: no pivot position exists in this row.
+                if current_pivot_position==self.num_columns() {
+                    /*
+                    * Search for pivot position in next row 
+                    * should continue from the left end of the row.
+                    */
+                    current_pivot_position = 0;
+                    println!("No pivot position found in row: {}", current_row);
+                    continue 'pivot_row_creation;
                 }
-                // if not, continue with next column
-                None => continue 'column_elimination
             }
+
+            println!("pivot position in row {}: {}", current_row, current_pivot_position);
+                
+            // normalize the row
+            self.scale_row(
+                current_row, // row index (= column index)
+                1.0 / self.entry(current_row, current_pivot_position)
+            );
+
+            // eliminate all elements above and below the pivot position
+            for r in 0..(self.rows.len()) {
+                if r != current_row {
+                    self.add_scalar_multiple(
+                        r, // row where entry in column current_column should be eliminated
+                        - self.entry(r, current_pivot_position), // scale factor for current_column in order to do the elimination via rank-preserving addition operation
+                        current_row
+                    );
+                }
+            }
+                
+            Self::display_matrix(self);
         }
     }
 
@@ -195,6 +215,14 @@ impl Matrix {
             }
         }
         None
+    }
+
+    /*
+    * Eliminates all non-zero entries below the entry (i, j) of the passed matrix
+    * (i.e. all entries in column j below row i).
+    */
+    pub fn eliminate_zeros_below_entry(self: &mut Self, i: usize, j: usize) {
+
     }
 
 
