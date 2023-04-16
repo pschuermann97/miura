@@ -4,6 +4,7 @@
 
 use crate::poly::Modulus;
 use std::collections::HashSet;
+use std::ops::Mul; // for trait bound for scale vector method
 
 
 /*
@@ -49,8 +50,12 @@ pub fn shift_vector(vec: &Vec<i32>, amt: usize) -> Vec<i32> {
 * Scales a vector by the passed factor amt,
 * i.e. vec![3, 2, 1] becomes vec![6, 5, 4] when scaled with 2.
 */
-pub fn scale_vector(vec: &Vec<i32>, amt: i32) -> Vec<i32> {
-    vec.iter().map(|x| amt * x).collect::<Vec<i32>>()
+pub fn scale_vector<T>(vec: &Vec<T>, amt: T) -> Vec<T> 
+    where
+        T: Mul + Copy, 
+        Vec<T>: FromIterator<<T as Mul>::Output> 
+{
+        vec.iter().map(|x| amt * *x).collect::<Vec<T>>()
 }
 
 /*

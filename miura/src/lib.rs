@@ -30,9 +30,9 @@ mod tests {
 
     use crate::series::*;
 
-    use sorting::*;
+    use crate::sorting::*;
 
-    use matrix::*;
+    use crate::matrix::*;
 
     #[test]
     fn test_euclid() {
@@ -866,6 +866,28 @@ mod tests {
         println!("Asserting that 3rd column is extracted correctly.");
 
         assert_eq!(test_matrix.column(2), vec![3.0, 6.0, 426.0]);
+    }
+
+
+
+    #[test]
+    fn scale_row_test() {
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0, 4.0],
+                vec![5.0, 6.0, 7.0, 426.0],
+                vec![9.0, 10.0, 11.0, 12.0]
+            ]
+        );
+
+        println!("Asserting that second row can be correctly scaled by 1.5.");
+
+        test_matrix.scale_row(1, 1.5);
+        assert_eq!(
+            test_matrix.row(1), vec![7.5, 9.0, 10.5, 639.0]
+        );
     }
 
 

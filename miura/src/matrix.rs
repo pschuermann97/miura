@@ -1,3 +1,5 @@
+use crate::vec_helper::scale_vector;
+
 /*
 * A struct describing a matrix of real numbers
 * with double floating point precision.
@@ -37,5 +39,19 @@ impl Matrix {
         }
 
         result
+    }
+
+    
+
+    // ---------------- row operations -------------------
+
+
+
+    /*
+    * Scales row i of the matrix with the scale factor c.
+    * Note that this operation is rank-preserving if and only if c != 0.
+    */
+    pub fn scale_row(self: &mut Self, i: usize, c: f32) {
+        self.rows[i] = scale_vector(&(self.rows[i]), c);
     }
 }
