@@ -847,6 +847,7 @@ mod tests {
     // ------------------ tests for matrix module -----------------------------
 
 
+
     #[test]
     fn rows_and_columns_test() {
         println!("Creating test 3x3 matrix.");
@@ -868,8 +869,6 @@ mod tests {
         assert_eq!(test_matrix.column(2), vec![3.0, 6.0, 426.0]);
     }
 
-
-
     #[test]
     fn scale_row_test() {
         println!("Creating 3x4 test matrix.");
@@ -887,6 +886,62 @@ mod tests {
         test_matrix.scale_row(1, 1.5);
         assert_eq!(
             test_matrix.row(1), vec![7.5, 9.0, 10.5, 639.0]
+        );
+    }
+
+    #[test]
+    fn swap_rows_test() {
+        println!("Creating 4x3 test matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 426.0, 5.0],
+                vec![426.0, 8.0, 426.0],
+                vec![10.0, 11.0, 12.0]
+            ]
+        );
+
+        println!("Asserting that rows 1 and 2 can be correctly swapped.");
+
+        test_matrix.swap_rows(1, 2);
+        assert_eq!(
+            test_matrix,
+            Matrix::new(
+                vec![
+                    vec![1.0, 2.0, 3.0],
+                    vec![426.0, 8.0, 426.0],
+                    vec![4.0, 426.0, 5.0],
+                    vec![10.0, 11.0, 12.0]
+                ]
+            )
+        )
+    }
+
+    #[test]
+    fn add_scalar_multiple_test() {
+        println!("Creating test 3x2 matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 3.0],
+                vec![0.0, 2.0],
+                vec![4.0, 426.0]
+            ]
+        );
+
+        println!("Adding 3.2 times row 0 to row 1.");
+
+        test_matrix.add_scalar_multiple(1, 3.2, 0);
+        assert_eq!(
+            test_matrix,    
+            Matrix::new(
+                vec![
+                    vec![1.0, 3.0],
+                    vec![3.2, 11.6],
+                    vec![4.0, 426.0]
+                ]
+            )
         );
     }
 
