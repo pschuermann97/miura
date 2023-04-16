@@ -1,4 +1,5 @@
 use crate::vec_helper::scale_vector;
+use crate::vec_helper::is_zero_vector;
 
 /*
 * A struct describing a matrix of real numbers
@@ -87,6 +88,26 @@ impl Matrix {
     */
     pub fn to_upper_triangular(self: &mut Self) {
 
+    }
+
+
+
+    // -------------- helper functions for computing upper triangular matrix ------------
+
+
+
+    /*
+    * Determines whether the i-th row of the matrix is a zero row.
+    */
+    pub fn is_zero_row(self: &Self, i: usize) -> bool {
+        is_zero_vector(self.row(i))
+    }
+
+    /*
+    * Determines whether the j-th column of the matrix is a zero column.
+    */
+    pub fn is_zero_column(self: &Self, j: usize) -> bool {
+        is_zero_vector(self.column(j))
     }
 }
 

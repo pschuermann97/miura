@@ -88,3 +88,15 @@ pub fn check_unique_in_1_to_n(vec: &Vec<usize>, n: usize) -> bool {
 
     return true;
 }
+
+/*
+* Determines whether the passed vector of floating point numbers is the zero vector.
+*/
+pub fn is_zero_vector(vec: Vec<f32>) -> bool {
+    for k in vec {
+        if k != 0.0 {
+            return false;
+        }
+    }
+    true
+}
