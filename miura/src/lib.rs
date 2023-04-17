@@ -1,20 +1,10 @@
 // module declarations
-mod poly;
-mod vec_helper;
-mod permutation;
-mod series;
-mod sorting;
-mod matrix;
-
-/**
-* Computes and returns the greatest common divisor of the input numbers a and b.
-*/
-fn euclid(a: u32, b:u32) -> u32 {
-    if b == 0 {a} else {
-        let r = a % b;
-        euclid(b, r)
-    }
-}
+pub mod poly;
+pub mod vec_helper;
+pub mod permutation;
+mod series; // unfinished and thus not made accessible
+pub mod sorting;
+pub mod matrix;
 
 /*
 * Module for unit-tests of this project.
@@ -33,27 +23,6 @@ mod tests {
     use crate::sorting::*;
 
     use crate::matrix::*;
-
-    #[test]
-    fn test_euclid() {
-        println!("test two coprime values");
-        assert_eq!(euclid(13, 4), 1);
-
-        println!("test two non-coprime values");
-        assert_eq!(euclid(84, 144), 12);
-
-        println!("test two large values");
-        assert_eq!(euclid(426426, 5184), 6);
-
-        println!("test two values where a<b");
-        assert_eq!(euclid(134, 426), 2);
-
-        println!("test with a=0");
-        assert_eq!(euclid(0, 71), 71);
-
-        println!("test with b=0");
-        assert_eq!(euclid(23, 0), 23);
-    }
 
     #[test]
     fn sorting_test() {
@@ -887,6 +856,34 @@ mod tests {
 
 
     // ------------------ tests for matrix module -----------------------------
+
+
+
+    #[test]
+    fn matrix_construction_test() {
+        println!("Creating test 3x3 matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 5.0, 6.0],
+                vec![7.0, 8.0, 426.0]
+            ]
+        );
+
+        assert!(test_matrix.is_ok());
+
+        println!("Attempting to create a matrix with rows of non-uniform length.");
+
+        let errornous_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0],
+                vec![426.0, 426.0, 426.0]
+            ]
+        );
+
+        assert_eq!(errornous_matrix, Err(MatrixError::NonUniformRowLengthError));
+    }
 
 
 
