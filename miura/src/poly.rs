@@ -348,3 +348,429 @@ pub enum PolynomialError {
     */
     ModulusMismatchError(Modulus, Modulus)
 }
+
+
+
+
+
+
+/*
+* Tests for the polynomial math module.
+*/
+#[cfg(test)]
+mod tests {
+    use crate::poly::*;
+
+    #[test]
+    fn get_coefficient_test() {
+        println!("Checking coefficients of integer polynomial.");
+
+        let integer_poly = IntPoly::new(
+            &mut vec![2, 3, 2, 1],
+            Modulus::None
+        );
+        assert_eq!(integer_poly.coefficient(0), 2);
+        assert_eq!(integer_poly.coefficient(1), 3);
+        assert_eq!(integer_poly.coefficient(2), 2);
+        assert_eq!(integer_poly.coefficient(3), 1);
+        assert_eq!(integer_poly.coefficient(4), 0);
+        assert_eq!(integer_poly.coefficient(426), 0);
+
+        println!("Checking coefficients of remainder class ring polynomial.");
+
+        let rem_class_ring_poly = IntPoly::new(
+            &mut vec![1, 13, 5, 10],
+            Modulus::Some(5)
+        );
+        assert_eq!(rem_class_ring_poly.coefficient(0), 1);
+        assert_eq!(rem_class_ring_poly.coefficient(1), 3);
+        assert_eq!(rem_class_ring_poly.coefficient(2), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(3), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(4), 0);
+        assert_eq!(rem_class_ring_poly.coefficient(5184), 0);
+    }
+
+    /*
+    * Computes the degree of some polynomials,
+    * with/without trailing zeros,
+    * over integer and remainder class rings.
+    */
+    #[test]
+    fn degree_test() {
+        println!("Testing integer polynomial with no trailing zero coefficients.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        assert_eq!(poly1.deg(), 3);
+
+        println!("Testing integer polynomial with trailing zero coefficients.");
+
+        let poly2 = IntPoly::new(
+            &mut vec![426, 1, 0],
+            Modulus::None
+        );
+        assert_eq!(poly2.deg(), 1);
+
+        println!("Testing remainder class ring polynomial with no trailing zero coefficients.");
+
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 1, 2],
+            Modulus::Some(5)
+        );
+        assert_eq!(poly3.deg(), 3);
+
+        println!("Testing remainder class ring polynomial with trailing zero coefficients.");
+
+        let poly4 = IntPoly::new(
+            &mut vec![1, 4, 5, 10],
+            Modulus::Some(5)
+        );
+        assert_eq!(poly4.deg(), 1);
+
+        println!("Testing integer zero polynomial.");
+
+        let zero_poly = zero_polynomial(Modulus::None);
+        assert_eq!(zero_poly.deg(), -1);
+    }
+
+    #[test]
+    fn add_poly_test() {
+        println!("Adding two integer polynomials with no trailing zeros in the sum.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::None
+        );
+
+        let result_12_poly = add_poly(&poly1, &poly2).unwrap();
+
+        assert_eq!(
+            result_12_poly,
+            IntPoly::new(
+                &mut vec![426, 426, 426, 426],
+                Modulus::None
+            )
+        );
+
+        println!("Adding two integer polynomials with trailing zeros in the sum.");
+
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 1, 426],
+            Modulus::None
+        );
+        let poly4 = IntPoly::new(
+            &mut vec![1, 1, 1, -426],
+            Modulus::None
+        );
+
+        let result_34_poly = add_poly(&poly3, &poly4).unwrap();
+
+        assert_eq!(
+            result_34_poly,
+            IntPoly::new(
+                &mut vec![2, 2, 2],
+                Modulus::None
+            )
+        );
+
+        println!("Adding two remainder class ring polynomials with no trailing zeros in the sum.");
+
+        let poly5 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::Some(5)
+        );
+        let poly6 = IntPoly::new(
+            &mut vec![2, 2, 2, 2],
+            Modulus::Some(5)
+        );
+
+        let result_56_poly = add_poly(&poly5, &poly6).unwrap();
+
+        assert_eq!(
+            result_56_poly,
+            IntPoly::new(
+                &mut vec![3, 3, 3, 3],
+                Modulus::Some(5)
+            )
+        );
+
+        println!("Adding two remainder class ring polynomials with trailing zeros in the sum.");
+
+        let poly7 = IntPoly::new(
+            &mut vec![2, 1, 1, 1],
+            Modulus::Some(426)
+        );
+        let poly8 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::Some(426)
+        );
+
+        let result_78_poly = add_poly(&poly7, &poly8).unwrap();
+
+        assert_eq!(
+            result_78_poly,
+            IntPoly::new(
+                &mut vec![427],
+                Modulus::Some(426)
+            )
+        );
+    }
+
+    #[test]
+    fn add_poly_mismatching_moduli_test() {
+        println!("Adding two integer polynomials with mismatching moduli.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![425, 425, 425, 425],
+            Modulus::Some(426)
+        );
+
+        let result_12_poly = add_poly(&poly1, &poly2);
+
+        assert_eq!(
+            result_12_poly, Err(PolynomialError::ModulusMismatchError(
+                Modulus::None,
+                Modulus::Some(426)
+            ))
+        )
+    }
+
+    #[test]
+    fn subtract_poly_test() {
+        println!("Subtracting a polynomial from itself.");
+        
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1, 426],
+            Modulus::None
+        );
+        assert_eq!(
+            subtract_poly(&poly1, &poly1),
+            Ok(
+                IntPoly::new(
+                    &mut vec![],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Subtracting two different polynomials.");
+
+        let poly2 = IntPoly::new(
+            &mut vec![0, 2, 427, 424],
+            Modulus::None
+        );
+        assert_eq!(
+            subtract_poly(&poly1, &poly2),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, -1, -426, 2],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn scale_poly_test() {
+        println!("Scale a polynomial with a positive number.");
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 1],
+            Modulus::None
+        );
+        assert_eq!(
+            poly1.scale(426),
+            IntPoly::new(
+                &mut vec![426, 426, 426],
+                Modulus::None
+            )
+        );
+
+        println!("Scale a polynomial with a negative number.");
+        assert_eq!(
+            poly1.scale(-426),
+            IntPoly::new(
+                &mut vec![-426, -426, -426],
+                Modulus::None
+            )
+        );
+
+        println!("Scale a polynomial with 0.");
+        assert_eq!(
+            poly1.scale(0),
+            IntPoly::new(
+                &mut vec![],
+                Modulus::None
+            )
+        )
+    }
+
+    #[test]
+    fn test_sum_of_polys() {
+        println!("Testing with four integer polynomials.");
+        
+        let poly1 = IntPoly::new(
+            &mut vec![1, 1, 426],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![2, 2, 2],
+            Modulus::None
+        );
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 0],
+            Modulus::None
+        );
+        let poly4 = IntPoly::new(
+            &mut vec![0, 0, 0],
+            Modulus::None
+        );
+
+        let poly_vec = vec![poly1, poly2, poly3, poly4];
+
+        let result_poly = sum_of_polys(&poly_vec);
+
+        assert_eq!(
+            result_poly,
+            Ok(
+                IntPoly::new(
+                    &mut vec![4, 4, 428],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Testing with empty polynomial vector, expecting zero polynomial.");
+
+        assert_eq!(
+            sum_of_polys(&vec![]),
+            Ok(zero_polynomial(Modulus::None))
+        )
+    }
+
+    #[test]
+    fn test_multiply_poly() {
+        println!("Testing with two integer polynomials.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![1, 2, 1],
+            Modulus::None
+        );
+
+        let poly2 = IntPoly::new(
+            &mut vec![0, 4, 0, 1],
+            Modulus::None
+        );
+
+        assert_eq!(
+            multiply_poly(&poly1, &poly2),
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 4, 8, 5, 2, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        // polynomial multiplication should be commutative
+        assert_eq!(
+            multiply_poly(&poly2, &poly1),
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 4, 8, 5, 2, 1],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn test_product_of_polys() {
+        println!("Testing with three integer polynomials.");
+
+        let poly1 = IntPoly::new(
+            &mut vec![0, 1, 1],
+            Modulus::None
+        );
+        let poly2 = IntPoly::new(
+            &mut vec![1, 1, 1],
+            Modulus::None
+        );
+        let poly3 = IntPoly::new(
+            &mut vec![1, 1, 2],
+            Modulus::None
+        );
+
+        assert_eq!(
+            product_of_polys(&vec![poly1, poly2, poly3]),
+            Ok(
+                IntPoly::new(
+                    &mut vec![0, 1, 3, 6, 7, 5, 2],
+                    Modulus::None
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn test_poly_power() {
+        println!("Testing with integer polynomial and exponent 2.");
+
+        let poly = IntPoly::new(
+            &mut vec![1, 1],
+            Modulus::None
+        );
+        assert_eq!(
+            poly_power(&poly, 2),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, 2, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Testing with integer polynomial and exponent 3.");
+
+        assert_eq!(
+            poly_power(&poly, 3),
+            Ok(
+                IntPoly::new(
+                    &mut vec![1, 3, 3, 1],
+                    Modulus::None
+                )
+            )
+        );
+
+        println!("Asserting that remainder class ring polynomial to the power of 0 is over correct ring.");
+
+        let rem_class_poly = IntPoly::new(
+            &mut vec![1, 1],
+            Modulus::Some(5)
+        );
+
+        assert_eq!(
+            poly_power(&rem_class_poly, 0),
+            Ok(one_polynomial(Modulus::Some(5)))
+        );
+    }
+
+    #[test]
+    fn test_string_representation() {
+        let poly1 = IntPoly::new(
+            &mut vec![1, 2, 1, 0],
+            Modulus::None
+        );
+
+        assert_eq!(poly1.to_string(), "1X^0 + 2X^1 + 1X^2");
+    }
+}

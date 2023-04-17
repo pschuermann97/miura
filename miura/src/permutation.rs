@@ -337,3 +337,310 @@ pub enum PermutationError {
     /// Occurs when attempting to compose two permutations from different symmetric groups.
     DomainRangeSizeMismatchError
 }
+
+
+
+
+
+
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::permutation::*;
+
+    #[test]
+    fn permutation_constructor_test() {
+        println!("Creating a proper permutation.");
+
+        let image_vec1 = vec![5, 3, 2, 1, 4];
+        assert!(
+            Permutation::new(image_vec1).is_ok()
+        );
+
+        println!("Attempt to create a permutation that has an out-of-range image.");
+
+        let image_vec2 = vec![2, 6, 4, 1, 3];
+        assert_eq!(
+            Permutation::new(image_vec2),
+            Err(PermutationError::NotBijectiveError)
+        );
+
+        println!("Attempt to create a permutation that is not bijective.");
+
+        let image_vec3 = vec![1, 2, 3, 4, 1];
+        assert_eq!(
+            Permutation::new(image_vec3),
+            Err(PermutationError::NotBijectiveError)
+        );
+
+        println!("Attempt to create a permutation for an empty image vector.");
+
+        assert_eq!(
+            Permutation::new(vec![]),
+            Err(PermutationError::EmptyImageVectorError)
+        );
+    }
+
+    #[test]
+    /*
+    * Tests whether the size of the set that the permutation operates on
+    * can be correctly computed.
+    */
+    fn n_test() {
+        println!("Creating S_1 permutation.");
+
+        let n1 = Permutation::new(vec![1]).unwrap().n();
+        assert_eq!(n1, 1);
+
+        println!("Creating S_5 permutation.");
+
+        let n2 = Permutation::new(vec![5, 3, 2, 1, 4]).unwrap().n();
+        assert_eq!(n2, 5);
+    }
+
+    #[test]
+    fn eval_test() {
+        println!("Creating an S_5 permutation.");
+
+        let sigma = Permutation::new(
+            vec![3, 4, 2, 1, 5]
+        ).unwrap();
+
+        println!("Checking evaluation for 3");
+
+        assert_eq!(sigma.eval(3), Ok(2));
+
+        println!("Asserting that evaluation for 426 fails.");
+
+        assert_eq!(sigma.eval(426), Err(PermutationError::ArgOutOfRangeError));
+    }
+
+    #[test]
+    fn identity_test() {
+        println!("Creating identity function in S_3.");
+        
+        assert_eq!(
+            identity(3),
+            Permutation::new(
+                vec![1, 2, 3]
+            )
+        );
+
+        println!("Asserting that suitable error is returned when attempting to create identity for S_0.");
+    }
+
+    #[test]
+    fn inverse_test() {
+        println!("Computing the inverse of a non-identity S_5 permutation.");
+
+        let sigma = Permutation::new(
+            vec![3, 4, 1, 5, 2]
+        ).unwrap();
+
+        assert_eq!(
+            sigma.inverse(),
+            Permutation::new(
+                vec![3, 5, 1, 2, 4]
+            ).unwrap()
+        );
+
+        println!("Computing the inverse of the identity S_5 permutation.");
+
+        assert_eq!(
+            identity(5).unwrap().inverse(),
+            identity(5).unwrap()
+        );
+    }
+
+    #[test]
+    fn transposition_test() {
+        println!("Creating transposition in S_5.");
+
+        assert_eq!(
+            transposition(5, 2, 3),
+            Permutation::new(
+                vec![1, 3, 2, 4, 5]
+            )
+        );
+
+        println!("Asserting that order of i and j parameters does not matter.");
+
+        assert_eq!(
+            transposition(5, 2, 3),
+            transposition(5, 3, 2)
+        );
+
+        println!("Creating identity on S_6 via transposition function.");
+
+        assert_eq!(
+            transposition(6, 1, 1),
+            identity(6)
+        );
+
+        println!("Asserting that we cannot swap values that are outside the domain (more precisely, transposition(5, 2, 426) returns an error).");
+
+        assert_eq!(
+            transposition(5, 2, 426),
+            Err(PermutationError::NotBijectiveError)
+        );
+    }
+
+    #[test]
+    fn test_compose() {
+        let sigma = transposition(4, 2, 3).unwrap();
+        let tau = transposition(4, 1, 2).unwrap();
+
+        println!("Composing two S_4 permutations.");
+
+        assert_eq!(
+            compose(&sigma, &tau),
+            Permutation::new(
+                vec![3, 1, 2, 4]
+            )
+        );
+
+        println!("Composing permutation with identity.");
+
+        assert_eq!(
+            compose(&sigma, &identity(4).unwrap()),
+            Ok(sigma)
+        );
+
+        println!("Asserting that attempting to compose two permutations from different symmetric groups results in an error.");
+
+        assert_eq!(
+            compose(&tau, &identity(5).unwrap()),
+            Err(PermutationError::DomainRangeSizeMismatchError)
+        );
+    }
+
+    #[test]
+    fn conjugate_test() {
+        println!("Conjugating an S_4 transposition with another S_4 permutation.");
+
+        let tau = Permutation::new(
+            vec![1, 3, 4, 2]
+        ).unwrap();
+        let sigma = transposition(4, 2, 3).unwrap();
+
+        assert_eq!(
+            conjugate(&sigma, &tau),
+            transposition(4, 3, 4)
+        );
+    }
+
+    #[test]
+    fn sign_test() {
+        println!("Computing the sign of the identity function.");
+
+        assert_eq!(identity(17).unwrap().sign(), 1);
+
+        println!("Computing the sign of a transposition.");
+
+        assert_eq!(transposition(19, 13, 7).unwrap().sign(), -1);
+
+        println!("Computing the sign of an odd permutation (composition of three transpositions).");
+
+        assert_eq!(
+            compose(
+                &(
+                    compose(
+                        &transposition(426, 12, 14).unwrap(),
+                        &transposition(426, 12, 67).unwrap()
+                    ).unwrap()
+                ),
+                &transposition(426, 234, 348).unwrap()
+            ).unwrap().sign(),
+
+            -1
+        )
+    }
+
+    #[test]
+    fn test_cycle_form() {
+        println!("Compute cycle form of a transposition from S_4.");
+
+        let tau = transposition(4, 2, 3).unwrap();
+
+        assert_eq!(
+            tau.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1], 4).unwrap(),
+                Cycle::new(vec![2, 3], 4).unwrap(),
+                Cycle::new(vec![4], 4).unwrap()
+            ]
+        );
+
+        println!("Compute cycle form of a cycle given in permutation form.");
+
+        let sigma1 = Permutation::new(
+            vec![2, 3, 4, 5, 6, 7, 1]
+        ).unwrap();
+
+        assert_eq!(
+            sigma1.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 2, 3, 4, 5, 6, 7], 7).unwrap()
+            ]
+        );
+
+        let sigma2 = Permutation::new(
+            vec![5, 3, 4, 1, 6, 2]
+        ).unwrap();
+
+        assert_eq!(
+            sigma2.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 5, 6, 2, 3, 4], 6).unwrap()
+            ]
+        );
+
+        println!("Testing for permutation with more than one cycle.");
+
+        let rho = Permutation::new(
+            vec![5, 6, 3, 1, 4, 2]
+        ).unwrap();
+
+        assert_eq!(
+            rho.to_cycle_form(),
+            vec![
+                Cycle::new(vec![1, 5, 4], 6).unwrap(),
+                Cycle::new(vec![2, 6], 6).unwrap(),
+                Cycle::new(vec![3], 6).unwrap()
+            ]
+        );
+    }
+
+    #[test]
+    fn test_cycle_string_representation() {
+        println!("Test for cycle of length 4 in S_7.");
+
+        let test_cycle = Cycle::new(
+            vec![1, 4, 6, 5], 7
+        );
+
+        assert_eq!(test_cycle.unwrap().to_string(), String::from("(1 4 6 5)"));
+
+        println!("Test for empty cycle in S_5.");
+
+        let empty_test_cycle = Cycle::new(
+            vec![], 5
+        );
+
+        assert_eq!(empty_test_cycle.unwrap().to_string(), String::from("()"));
+    }
+
+    #[test]
+    fn test_permutation_string_representation() {
+        println!("Test for S_6 permutation.");
+
+        let sigma = Permutation::new(
+            vec![5, 6, 3, 1, 4, 2]
+        ).unwrap();
+
+        assert_eq!(sigma.to_string(), "(1 5 4)(2 6)");
+    }
+}

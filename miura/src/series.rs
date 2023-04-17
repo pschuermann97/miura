@@ -25,3 +25,32 @@ pub fn exp(x: f64) -> f64 {
 
     result
 }
+
+
+
+
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::series::*;
+
+    #[test]
+    fn exp_test() {
+        println!("Evaluating the exponential function for some positive integer.");
+
+        // precision of 14
+        assert!(exp(3.0) >= 20.08553692318766);
+        assert!(exp(3.0) < 20.08553692318767);
+
+        println!("Evaluating the exponential function for 0.");
+
+        assert_eq!(exp(0.0), 1.0);
+
+        println!("Evaluating the exponential function for some negative integer.");
+
+        println!("Can't be tested yet due to lack of floating point precision!");
+    }
+}

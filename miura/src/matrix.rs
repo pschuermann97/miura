@@ -226,3 +226,328 @@ pub enum MatrixError{
 }
 
 
+
+
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::matrix::*;
+
+    #[test]
+    fn matrix_construction_test() {
+        println!("Creating test 3x3 matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 5.0, 6.0],
+                vec![7.0, 8.0, 426.0]
+            ]
+        );
+
+        assert!(test_matrix.is_ok());
+
+        println!("Attempting to create a matrix with rows of non-uniform length.");
+
+        let errornous_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0],
+                vec![426.0, 426.0, 426.0]
+            ]
+        );
+
+        assert_eq!(errornous_matrix, Err(MatrixError::NonUniformRowLengthError));
+    }
+
+
+
+    #[test]
+    fn rows_and_columns_test() {
+        println!("Creating test 3x3 matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 5.0, 6.0],
+                vec![7.0, 8.0, 426.0]
+            ]
+        ).unwrap();
+
+        println!("Asserting that 2nd row is extracted correctly.");
+
+        assert_eq!(test_matrix.row(1), vec![4.0, 5.0, 6.0]);
+
+        println!("Asserting that 3rd column is extracted correctly.");
+
+        assert_eq!(test_matrix.column(2), vec![3.0, 6.0, 426.0]);
+    }
+
+    #[test]
+    fn scale_row_test() {
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0, 4.0],
+                vec![5.0, 6.0, 7.0, 426.0],
+                vec![9.0, 10.0, 11.0, 12.0]
+            ]
+        ).unwrap();
+
+        println!("Asserting that second row can be correctly scaled by 1.5.");
+
+        test_matrix.scale_row(1, 1.5);
+        assert_eq!(
+            test_matrix.row(1), vec![7.5, 9.0, 10.5, 639.0]
+        );
+    }
+
+    #[test]
+    fn switch_rows_test() {
+        println!("Creating 4x3 test matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 3.0],
+                vec![4.0, 426.0, 5.0],
+                vec![426.0, 8.0, 426.0],
+                vec![10.0, 11.0, 12.0]
+            ]
+        ).unwrap();
+
+        println!("Asserting that rows 1 and 2 can be correctly swapped.");
+
+        test_matrix.switch_rows(1, 2);
+        assert_eq!(
+            test_matrix,
+            Matrix::new(
+                vec![
+                    vec![1.0, 2.0, 3.0],
+                    vec![426.0, 8.0, 426.0],
+                    vec![4.0, 426.0, 5.0],
+                    vec![10.0, 11.0, 12.0]
+                ]
+            ).unwrap()
+        )
+    }
+
+    #[test]
+    fn add_scalar_multiple_test() {
+        println!("Creating test 3x2 matrix.");
+
+        let mut test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 3.0],
+                vec![0.0, 2.0],
+                vec![4.0, 426.0]
+            ]
+        ).unwrap();
+
+        println!("Adding 3.2 times row 0 to row 1.");
+
+        test_matrix.add_scalar_multiple(1, 3.2, 0);
+        assert_eq!(
+            test_matrix,    
+            Matrix::new(
+                vec![
+                    vec![1.0, 3.0],
+                    vec![3.2, 11.6],
+                    vec![4.0, 426.0]
+                ]
+            ).unwrap()
+        );
+    }
+
+    #[test]
+    fn is_zero_row_column_test(){
+        println!("Creating 3x4 test matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 2.0, 426.0, 0.0],
+                vec![0.0, 0.0, 0.0, 0.0],
+                vec![9.0, 10.0, 11.0, 0.0]
+            ]
+        ).unwrap();
+
+        println!("Asserting that zero row is correctly classified.");
+
+        assert_eq!(test_matrix.is_zero_row(1), true);
+
+        println!("Asserting that non-zero row is correctly classified.");
+
+        assert_eq!(test_matrix.is_zero_row(2), false);
+
+        println!("Asserting that zero column is correctly classified.");
+
+        assert_eq!(test_matrix.is_zero_column(3), true);
+
+        println!("Asserting that non-zero column is correctly classified.");
+
+        assert_eq!(test_matrix.is_zero_column(0), false);
+    }
+
+    #[test]
+    fn test_first_row_without_zero_at_beginning_from() {
+        println!("Creating 3x3 test matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 1.0, 0.0]
+            ]
+        ).unwrap();
+
+        println!("Searching for non zero elements in different columns.");
+
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(0, 0), Some(0));
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(0, 1), None);
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(1, 0), Some(2));
+        assert_eq!(test_matrix.next_row_without_zero_at_beginning_from(2, 0), None);
+    }
+
+    #[test]
+    fn test_first_non_zero_row_beginning_from() {
+        println!("Creating 5x3 test matrix.");
+
+        let test_matrix = Matrix::new(
+            vec![
+                vec![1.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 426.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+                vec![0.0, 0.0, 0.0],
+            ]
+        ).unwrap();
+
+        println!("Searching for next non-zero row from various different starting rows.");
+
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(0), Some(0));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(1), Some(2));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(2), Some(2));
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(3), None);
+        assert_eq!(test_matrix.next_non_zero_row_beginning_from(4), None);
+    }
+
+    #[test]
+    fn test_to_upper_triangular() {
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix1 = Matrix::new(
+            vec![
+                vec![1.0, 1.0, -1.0, 0.0],
+                vec![2.0, 1.0, 0.0, 1.0],
+                vec![3.0, 1.0, 2.0, 0.0]
+            ]
+        ).unwrap();
+
+        println!("Assert that upper triangular form of the first test matrix is correctly computed.");
+
+        test_matrix1.to_upper_triangular();
+        assert_eq!(
+            test_matrix1,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 0.0, 3.0],
+                    vec![0.0, 1.0, 0.0, -5.0],
+                    vec![0.0, 0.0, 1.0, -2.0]
+                ]
+            ).unwrap()
+        );
+
+        println!("Creating 3x5 test matrix.");
+
+        let mut test_matrix2 = Matrix::new(
+            vec![
+                vec![3.0, -3.0, 3.0, 6.0, 3.0],
+                vec![1.0, -1.0, -3.0, 0.0, -8.0],
+                vec![2.0, -2.0, -2.0, 2.0, 5.0]
+            ]
+        ).unwrap();
+
+        println!("Assert that upper triangular form of the second test matrix is correctly computed.");
+
+        test_matrix2.to_upper_triangular();
+        assert_eq!(
+            test_matrix2,
+            Matrix::new(
+                vec![
+                    vec![1.0, -1.0, 0.0, 1.5, 0.0],
+                    vec![0.0, 0.0, 1.0, 0.5, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0, 1.0]
+                ]
+            ).unwrap()
+        );
+
+        println!("Creating 4x5 test matrix.");
+
+        let mut test_matrix3 = Matrix::new(
+            vec![
+                vec![1.0, 1.0, 1.0, 0.0, 3.0],
+                vec![-11.0, 1.0, 9.0, 2.0, -15.0],
+                vec![3.0, 0.0, -3.0, 0.0, 3.0],
+                vec![8.0, 2.0, -4.0, -1.0, 13.0]
+            ]
+        ).unwrap();
+
+        println!("Assert that upper triangular form of the third test matrix is correctly computed.");
+
+        test_matrix3.to_upper_triangular();
+        assert_eq!(
+            test_matrix3,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 0.0, 0.0, 2.0],
+                    vec![0.0, 1.0, 0.0, 0.0, 0.0],
+                    vec![0.0, 0.0, 1.0, 0.0, 1.0],
+                    vec![0.0, 0.0, 0.0, 1.0, -1.0]
+                ]
+            ).unwrap()
+        );
+
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix4 = Matrix::new(
+            vec![
+                vec![3.0, 0.0, 3.0, 0.0],
+                vec![3.0, 1.0, 1.0, 0.0],
+                vec![2.0, 1.0, 0.0, 0.0]
+            ]
+        ).unwrap();
+
+        println!("Assert that upper triangular form of the fourth test matrix is correctly computed.");
+
+        test_matrix4.to_upper_triangular();
+        assert_eq!(
+            test_matrix4,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 1.0, 0.0],
+                    vec![0.0, 1.0, -2.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0]
+                ]
+            ).unwrap()
+        );
+
+        println!("Assert idempotency of operation.");
+
+        // at this point, the matrix already is in upper triangular form
+        test_matrix4.to_upper_triangular();
+
+        test_matrix4.to_upper_triangular();
+        assert_eq!(
+            test_matrix4,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 1.0, 0.0],
+                    vec![0.0, 1.0, -2.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0]
+                ]
+            ).unwrap()
+        );
+    }
+}

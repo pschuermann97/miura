@@ -91,3 +91,62 @@ pub fn is_zero_vector(vec: Vec<f32>) -> bool {
     }
     true
 }
+
+
+
+
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::vec_helper::*;
+
+    #[test]
+    fn test_shift_vector() {
+        println!("Shift vector by positive number.");
+
+        let vec = vec![426, 99, 71];
+
+        let shifted_vec1 = shift_vector(&vec, 3);
+
+        assert_eq!(shifted_vec1, vec![0, 0, 0, 426, 99, 71]);
+
+        println!("Shift vector by 0.");
+
+        let shifted_vec2 = shift_vector(&vec, 0);
+
+        assert_eq!(shifted_vec2, vec);
+    }
+
+    #[test]
+    fn test_scale_vector() {
+        println!("Scale vector by positive number.");
+
+        let vec = vec![426, 1, 1];
+        let scaled_vector1 = scale_vector(&vec, 5);
+        assert_eq!(scaled_vector1, vec![2130, 5, 5]);
+
+        println!("Scale vector by negative number.");
+
+        let scaled_vector2 = scale_vector(&vec, -5);
+        assert_eq!(scaled_vector2, vec![-2130, -5, -5]);
+
+        println!("Scale vector by 0.");
+
+        let scaled_vector3 = scale_vector(&vec, 0);
+        assert_eq!(scaled_vector3, vec![0, 0, 0]);
+    }
+
+    #[test]
+    fn test_is_zero_vector(){
+        println!("Testing zero vector.");
+
+        assert_eq!(is_zero_vector(vec![0.0, 0.0, 0.0, 0.0]), true);
+
+        println!("Testing non-zero vector.");
+
+        assert_eq!(is_zero_vector(vec![426.0, 426.0]), false);
+    }
+}
