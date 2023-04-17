@@ -793,6 +793,37 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_cycle_string_representation() {
+        println!("Test for cycle of length 4 in S_7.");
+
+        let test_cycle = Cycle::new(
+            vec![1, 4, 6, 5], 7
+        );
+
+        assert_eq!(test_cycle.unwrap().to_string(), String::from("(1 4 6 5)"));
+
+        println!("Test for empty cycle in S_5.");
+
+        let empty_test_cycle = Cycle::new(
+            vec![], 5
+        );
+
+        assert_eq!(empty_test_cycle.unwrap().to_string(), String::from("()"));
+    }
+
+    #[test]
+    fn test_permutation_string_representation() {
+        println!("Test for S_6 permutation.");
+
+        let sigma = Permutation::new(
+            vec![5, 6, 3, 1, 4, 2]
+        ).unwrap();
+
+        assert_eq!(sigma.to_string(), "(1 5 4)(2 6)");
+    }
+
+
 
     // -------------------- end of tests for permutations module -------------------
 

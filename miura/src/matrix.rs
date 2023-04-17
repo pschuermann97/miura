@@ -217,14 +217,6 @@ impl Matrix {
         None
     }
 
-    /*
-    * Eliminates all non-zero entries below the entry (i, j) of the passed matrix
-    * (i.e. all entries in column j below row i).
-    */
-    pub fn eliminate_zeros_below_entry(self: &mut Self, i: usize, j: usize) {
-
-    }
-
 
 
     // -------------- end of helper functions for computing upper triangular matrix ------------

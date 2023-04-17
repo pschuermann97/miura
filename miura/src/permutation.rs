@@ -13,7 +13,7 @@ pub struct Permutation {
 /*
 * Models a cycle in a permutation sigma, 
 * i.e. a sequence of numbers i_1, ..., i_r 
-* with sigma(i_k) = i_(k+1) and sigma(i_r) = i_1.
+* with sigma(i_k) = i_{k+1} and sigma(i_r) = i_1.
 */
 #[derive(Debug, PartialEq)]
 pub struct Cycle {
@@ -196,12 +196,24 @@ impl Permutation {
         cycles
     }
 
-    pub fn to_string() {
+    /*
+    * Computes a string representation of this permutation using its cycle form.
+    * I.e. the result looks like "(1 5 4)(2 6)".
+    */
+    pub fn to_string(self: &Self) -> String {
         // compute cycle form
+        let cycle_form = self.to_cycle_form();
 
-        // filter length-1 cycles
+        // filter length-1 cycles and retain vector of remaining ones
+        let filtered_cycle_form = cycle_form.iter().filter(|c| c.len() > 1);
 
-        // print remaining cycles
+        // concatenate string representations of remaining cycles
+        let mut result = String::new();
+        for cycle in filtered_cycle_form {
+            result.push_str(&(cycle.to_string()));
+        }
+
+        result
     }
 }
 
@@ -225,8 +237,36 @@ impl Cycle {
         }
     }
     
-    pub fn length(self: &Self) -> usize {
+    /*
+    * Returns the length of the cycle, 
+    * i.e. the number of elements contained in it.
+    */
+    pub fn len(self: &Self) -> usize {
         self.elements.len()
+    }
+
+    /*
+    * Computes the string representation of a cycle
+    * (which looks like the standard cycle notation,
+    * e.g. "(1 4 2 3)")
+    */
+    pub fn to_string(self: &Self) -> String {
+        // filter out special case of empty cycle in the beginning
+        if self.elements.len() == 0 {
+            return String::from("()");
+        }
+        
+        let mut result = String::from("(");
+
+        for i in 0..self.elements.len() {
+            result.push_str(&(self.elements[i].to_string() + " "));
+        }
+
+        // trim trailing whitespace and add closing bracket
+        result = result[0..result.len()-1].to_string();
+        result.push_str(")");
+
+        result
     }
 }
 
