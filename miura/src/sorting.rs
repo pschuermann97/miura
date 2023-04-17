@@ -215,3 +215,63 @@ pub fn counting_sort(a: &Vec<u32>, s: u32) -> Result<Vec<u32>, SortingInstanceEr
 /// Unit-like struct modelling any error that could occur from an unsuitable input to a sorting algorithm.
 #[derive(Debug, PartialEq)]
 pub struct SortingInstanceError;
+
+
+
+
+
+
+/*
+* Module for tests for the sorting module.
+*/
+#[cfg(test)]
+mod tests {
+    use crate::sorting::*;
+
+    #[test]
+    fn sorting_test() {
+        println!("Testing all sorting algorithms implemented in this library.");
+        
+        let vector1 = vec![3, 2, 4, 1, 5, 1, 1, 3, 4];
+        let vector1_sorted = vec![1, 1, 1, 2, 3, 3, 4, 4, 5];
+
+        let vector2 = vec![32, 426, 426, 18, 2, 2, 32, 32];
+        let vector2_sorted = vec![2, 2, 18, 32, 32, 32, 426, 426];
+
+        println!("Sorting test vectors with quicksort.");
+
+        let vector1_quicksorted = quicksort(&vector1);
+        assert_eq!(vector1_quicksorted, vector1_sorted);
+
+        let vector2_quicksorted = quicksort(&vector2);
+        assert_eq!(vector2_quicksorted, vector2_sorted);
+
+        println!("Sorting test vectors with countingsort.");
+
+        let vector1_countingsorted = counting_sort(&vector1, 5);
+        assert_eq!(vector1_countingsorted, Ok(vector1_sorted.clone()));
+
+        let vector2_countingsorted = counting_sort(&vector2, 426);
+        assert_eq!(vector2_countingsorted, Ok(vector2_sorted.clone()));
+
+        println!("Sorting test vectors with insertionsort.");
+
+        // need to clone test vectors since insertion sort works on mutable references
+        let mut vector1_clone = vector1.clone();
+        let mut vector2_clone = vector2.clone();
+
+        insertion_sort(&mut vector1_clone);
+        assert_eq!(vector1_clone, vector1_sorted);
+
+        insertion_sort(&mut vector2_clone);
+        assert_eq!(vector2_clone, vector2_sorted);
+
+        println!("Sorting test vectors with mergesort");
+
+        let vector1_mergesorted = merge_sort(&vector1);
+        assert_eq!(vector1_mergesorted, vector1_sorted);
+
+        let vector2_mergesorted = merge_sort(&vector2);
+        assert_eq!(vector2_mergesorted, vector2_sorted);
+    }
+}
