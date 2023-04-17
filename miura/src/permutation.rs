@@ -1,20 +1,16 @@
 use crate::vec_helper::check_unique_in_1_to_n;
 use std::collections::HashSet;
 
-/*
-* A struct that models a permutation from some symmetric group S_n,
-* i.e. a bijective mapping from {1, ..., n} to {1, ..., n}.
-*/
+/// A struct that models a permutation from some symmetric group S_n,
+/// i.e. a bijective mapping from {1, ..., n} to {1, ..., n}.
 #[derive(Debug, PartialEq)]
 pub struct Permutation {
     images: Vec<usize>
 }
 
-/*
-* Models a cycle in a permutation sigma, 
-* i.e. a sequence of numbers i_1, ..., i_r 
-* with sigma(i_k) = i_{k+1} and sigma(i_r) = i_1.
-*/
+/// Models a cycle in a permutation sigma, 
+/// i.e. a sequence of numbers i_1, ..., i_r 
+/// with sigma(i_k) = i_{k+1} and sigma(i_r) = i_1.
 #[derive(Debug, PartialEq)]
 pub struct Cycle {
     elements: Vec<usize>
@@ -24,11 +20,9 @@ pub struct Cycle {
 
 
 impl Permutation {
-    /*
-    * Constructs a new permutation from S_n from the passed number vector of length n.
-    * Checks whether the vector defines a bijective mapping on {1, ..., n},
-    * if it does not, an appropiate error is returned.
-    */
+    /// Constructs a new permutation from S_n from the passed number vector of length n.
+    /// Checks whether the vector defines a bijective mapping on {1, ..., n},
+    /// if it does not, an appropiate error is returned.
     pub fn new(vec: Vec<usize>) -> Result<Permutation, PermutationError> {
         let n = vec.len();
         
@@ -62,18 +56,14 @@ impl Permutation {
         )
     }
 
-    /*
-    * Returns the size of the set n that this permutation operates on.
-    */
+    /// Returns the size of the set {1, ..., n} that this permutation operates on.
     pub fn n(self: &Self) -> usize {
         self.images.len()
     }
 
-    /*
-    * Evaluates the permutation for the passed number.
-    * If the number is not in the set that the permutation operates on,
-    * an error is returned.
-    */
+    /// Evaluates the permutation for the passed number.
+    /// If the number is not in the set that the permutation operates on,
+    /// an error is returned.
     pub fn eval(self: &Self, i: usize) -> Result<usize, PermutationError> {
         if i > self.n() || i <= 0 {
             Err(PermutationError::ArgOutOfRangeError)
@@ -86,9 +76,7 @@ impl Permutation {
         }
     }
 
-    /*
-    * Computes the inverse of the permutation.
-    */
+    /// Computes the inverse of the permutation.
     pub fn inverse(self: &Self) -> Permutation {
         let mut inverse_images = Vec::<usize>::new();
         let n = self.images.len();
@@ -117,13 +105,11 @@ impl Permutation {
         ).unwrap() // if a mapping is a permutation then so is its inverse -> always Ok-variant
     }
 
-    /*
-    * Computes the sign of the permutation sigma 
-    * which is the number of inversions in sigma.
-    * 
-    * An inversion is a tuple (i, j) of numbers in {1, ..., n}
-    * where i < j but sigma(i) > sigma(j) 
-    */
+    /// Computes the sign of the permutation sigma 
+    /// which is the number of inversions in sigma.
+    /// 
+    /// An inversion is a tuple (i, j) of numbers in {1, ..., n}
+    /// where i < j but sigma(i) > sigma(j) 
     pub fn sign(self: &Self) -> i32 {
         let mut inversions = 0;
         let n = self.n();
@@ -139,11 +125,9 @@ impl Permutation {
         if inversions % 2 == 0 { 1 } else { -1 }
     }
 
-    /*
-    * Computes the cycle form of some permutation sigma from its table form.
-    * So instead of a vector of images, the permutation is represented as a vector of Cycles,
-    * where each element from the set {1, ..., n} appears in exactly one cycle.
-    */ 
+    /// Computes the cycle form of some permutation sigma from its table form.
+    /// So instead of a vector of images, the permutation is represented as a vector of Cycles,
+    /// where each element from the set {1, ..., n} appears in exactly one cycle.
     pub fn to_cycle_form(self: &Self) -> Vec<Cycle> {
         // store set size for readability
         let n = self.n();
@@ -196,10 +180,8 @@ impl Permutation {
         cycles
     }
 
-    /*
-    * Computes a string representation of this permutation using its cycle form.
-    * I.e. the result looks like "(1 5 4)(2 6)".
-    */
+    /// Computes a string representation of this permutation using its cycle form.
+    /// I.e. the result looks like "(1 5 4)(2 6)".
     pub fn to_string(self: &Self) -> String {
         // compute cycle form
         let cycle_form = self.to_cycle_form();
@@ -220,11 +202,9 @@ impl Permutation {
 
 
 impl Cycle {
-    /*
-    * Constructs a new cycle in S_n from the passed vector of non-negative numbers.
-    * 
-    * If the passed vector does not represent a proper cycle, an error is returned.
-    */
+    /// Constructs a new cycle in S_n from the passed vector of non-negative numbers.
+    /// 
+    /// If the passed vector does not represent a proper cycle, an error is returned.
     pub fn new(vec: Vec<usize>, n: usize) -> Result<Cycle, PermutationError> {
         if check_unique_in_1_to_n(&vec, n) {
             Ok(
@@ -237,19 +217,15 @@ impl Cycle {
         }
     }
     
-    /*
-    * Returns the length of the cycle, 
-    * i.e. the number of elements contained in it.
-    */
+    /// Returns the length of the cycle, 
+    /// i.e. the number of elements contained in it.
     pub fn len(self: &Self) -> usize {
         self.elements.len()
     }
 
-    /*
-    * Computes the string representation of a cycle
-    * (which looks like the standard cycle notation,
-    * e.g. "(1 4 2 3)")
-    */
+    /// Computes the string representation of a cycle
+    /// (which looks like the standard cycle notation,
+    /// e.g. "(1 4 2 3)")
     pub fn to_string(self: &Self) -> String {
         // filter out special case of empty cycle in the beginning
         if self.elements.len() == 0 {
@@ -273,10 +249,8 @@ impl Cycle {
 
 
 
-/*
-* Returns the identity function on the set {1, ..., n} 
-* which is the neutral element of the symmetric group S_n.
-*/
+/// Returns the identity function on the set {1, ..., n} 
+/// which is the neutral element of the symmetric group S_n.
 pub fn identity(n: usize) -> Result<Permutation, PermutationError> {
     // catch special case that n is 0: S_0 does not exist
     if n==0 {
@@ -288,10 +262,8 @@ pub fn identity(n: usize) -> Result<Permutation, PermutationError> {
     )
 }
 
-/*
-* Creates a permutation in S_n that swaps the passed i and j
-* and otherwise behaves like the identity.
-*/
+/// Creates a permutation in S_n that swaps the passed i and j
+/// and otherwise behaves like the identity.
 pub fn transposition(n: usize, i: usize, j: usize) -> Result<Permutation, PermutationError> {
     if i == j {
         return identity(n);
@@ -311,9 +283,7 @@ pub fn transposition(n: usize, i: usize, j: usize) -> Result<Permutation, Permut
     }
 }
 
-/*
-* Creates the composition sigma after tau of the two passed permutations sigma and tau. 
-*/ 
+/// Creates the composition sigma after tau of the two passed permutations sigma and tau. 
 pub fn compose(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, PermutationError> {
     // compute size of set that sigma operates on
     let n = sigma.n();
@@ -338,9 +308,7 @@ pub fn compose(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, Pe
     )
 }
 
-/*
-* Returns the composition tau after sigma after inverse(tau).
-*/
+/// Returns the composition tau after sigma after inverse(tau).
 pub fn conjugate(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, PermutationError> {
     compose(
         &(compose(tau, sigma).unwrap()),
@@ -348,34 +316,24 @@ pub fn conjugate(sigma: &Permutation, tau: &Permutation) -> Result<Permutation, 
     )
 }
 
+/// A type that models all kinds of errors
+/// that can occur when working with permutations.
 #[derive(Debug, PartialEq)]
 pub enum PermutationError {
-    /*
-    * Returned upon attempt to evaluate the permutation for a value outside {1, ..., n}
-    * for the respective n of the permutation.
-    */
+    /// Returned upon attempt to evaluate the permutation for a value outside {1, ..., n}
+    /// for the respective n of the permutation.
     ArgOutOfRangeError,
-    /*
-    * Returned upon attempt to create a permutation that returns a value outside {1, ..., n}
-    * for the respective n of the permutation.
-    */
+    /// Returned upon attempt to create a permutation that returns a value outside {1, ..., n}
+    /// for the respective n of the permutation.
     ImageOutOfRangeError,
-    /*
-    * Returned upon attempt to create a permutation that is not bijective.
-    */
+    /// Returned upon attempt to create a permutation that is not bijective.
     NotBijectiveError,
-    /*
-    * Returned upon attempt to construct a cycle 
-    * that contains numbers outside {1, ..., n}
-    * or the same number twice.
-    */
+    /// Returned upon attempt to construct a cycle 
+    /// that contains numbers outside {1, ..., n}
+    /// or the same number twice.
     NoValidCycleError,
-    /*
-    * Occurs when attempting to create a permutation from an empty vector of images.
-    */
+    /// Occurs when attempting to create a permutation from an empty vector of images.
     EmptyImageVectorError,
-    /*
-    * Occurs when attempting to compose two permutations from different symmetric groups.
-    */
+    /// Occurs when attempting to compose two permutations from different symmetric groups.
     DomainRangeSizeMismatchError
 }

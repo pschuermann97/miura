@@ -1,40 +1,32 @@
 use std::cmp::max; // maximum function
 use crate::vec_helper::*; // helper functions for operating on coefficient vectors
 
-/*
-* Models a polynomial a_0 + a_1 * X + ... + a_n * X^n with either integer coefficients 
-* or coefficients from a remainder class ring. 
-* 
-* Polynomials are stored as coefficient vectors
-* and the coefficient for the highest-degree monomial is guaranteed to be != 0.
-*/
+/// Models a polynomial a_0 + a_1 * X + ... + a_n * X^n with either integer coefficients 
+/// or coefficients from a remainder class ring. 
+/// 
+/// Polynomials are stored as coefficient vectors
+/// and the coefficient for the highest-degree monomial is guaranteed to be != 0.
 #[derive(PartialEq, Debug, Clone)]
 pub struct IntPoly {
-    /*
-    * Vector of coefficients of the polynomial,
-    * coeff[i] is the coefficient for X^i.
-    */
+    /// Vector of coefficients of the polynomial,
+    /// coeff[i] is the coefficient for X^i.
     coefficients: Vec<i32>,
-    /*
-    * For polynomials over a remainder class ring Z_q, this is Some(q).
-    * For polynomials over integers, this is None.
-    */
+    /// For polynomials over a remainder class ring Z_q, this is Some(q).
+    /// For polynomials over integers, this is None.
     modulus: Modulus
 }
 
 impl IntPoly {
-    /*
-    * Constructor, creates a struct instance modeling a new polynomial.
-    * 
-    * Note that trailing zeros are cut,
-    * i.e. 1 + X + 0X^2 + 4X^3 + 0X^4 would become 1 + X + 0X^2 + 4X^3.
-    *
-    * For a polynomial over a remainder class ring Z/qZ,
-    * this means that all trailing multiples of q are cut,
-    * i.e. 1 + qX + 3qX^2 would become 1.
-    *
-    * Any coefficients for monomials with higher degrees than the explicitly listed ones are 0. 
-    */
+    /// Constructor, creates a struct instance modeling a new polynomial.
+    ///
+    /// Note that trailing zeros are cut,
+    /// i.e. 1 + X + 0X^2 + 4X^3 + 0X^4 would become 1 + X + 0X^2 + 4X^3.
+    ///
+    /// For a polynomial over a remainder class ring Z/qZ,
+    /// this means that all trailing multiples of q are cut,
+    /// i.e. 1 + qX + 3qX^2 would become 1.
+    ///
+    /// Any coefficients for monomials with higher degrees than the explicitly listed ones are 0. 
     pub fn new(coeff:&mut Vec<i32>, md: Modulus) -> IntPoly {
         // trim trailing zeros/ multiples of modulus
         remove_trailing_zeros(coeff, md);
@@ -45,12 +37,10 @@ impl IntPoly {
         }
     }
 
-    /*
-    * Returns the coefficient for the monomial with the passed exponent.
-    *
-    * For polynomials over remainder class ring Z/qZ, 
-    * we reduce the coefficient to the standard representative system {0, ..., q-1}.
-    */
+    /// Returns the coefficient for the monomial with the passed exponent.
+    ///
+    /// For polynomials over remainder class ring Z/qZ, 
+    /// we reduce the coefficient to the standard representative system {0, ..., q-1}.
     pub fn coefficient(self: &Self, exponent: usize) -> i32 {
         /*
         * Coefficients that are not explicitly listed in the self.coefficients vector are 0.
@@ -74,14 +64,12 @@ impl IntPoly {
         }
     }
     
-    /*
-    * Computes the degree of the passed polynomial.
-    * Exploits the fact that trailing zeros are cut from the polynomial upon instantiation,
-    * i.e. 1 + X + 0X^2 + 4X^3 + 0X^4 becomes 1 + X + 0X^2 + 4X^3.
-    *
-    * Note that in this library, the degree of the zero polynomial is -1,
-    * some literature has it as negative infinity.
-    */
+    /// Computes the degree of the passed polynomial.
+    /// Exploits the fact that trailing zeros are cut from the polynomial upon instantiation,
+    /// i.e. 1 + X + 0X^2 + 4X^3 + 0X^4 becomes 1 + X + 0X^2 + 4X^3.
+    ///
+    /// Note that in this library, the degree of the zero polynomial is -1,
+    /// some literature has it as negative infinity.
     pub fn deg(self: &Self) -> i32 {
         if self.coefficients.len() == 0 { -1 } 
         /*
@@ -91,12 +79,10 @@ impl IntPoly {
         else { (self.coefficients.len() - 1).try_into().unwrap() }
     }
 
-    /*
-    * Scales the polynomial with the passed scale factor,
-    * i.e. multiplies all the coefficients with it.
-    * The result is returned as a new IntPoly instance,
-    * the original polynomial is not changed.
-    */
+    /// Scales the polynomial with the passed scale factor,
+    /// i.e. multiplies all the coefficients with it.
+    /// The result is returned as a new IntPoly instance,
+    /// the original polynomial is not changed.
     pub fn scale(self: &Self, scale_factor: i32) -> IntPoly {
         IntPoly::new( // this call removes trailing zeros from the passed vector automatically
             &mut scale_vector(&self.coefficients, scale_factor),
@@ -104,13 +90,13 @@ impl IntPoly {
         )
     }
 
-    /*
-    * Returns the additive inverse of the passed polynomial.
-    */
+    /// Returns the additive inverse of the passed polynomial.
     pub fn additive_inverse(self: &Self) -> IntPoly {
         self.scale(-1)
     }
 
+    /// Computes a string representation of this polynomial,
+    /// looking like "1X^0 + 2X^1 + 1X^2"
     pub fn to_string(self: &Self) -> String {
         /*
         * Special case: representation of polynomial with empty coefficients vector 
@@ -143,12 +129,10 @@ impl IntPoly {
     }
 }
 
-/*
-* Returns the sum of the two passed polynomials.
-* Trailing zeros of the sum are cut in the process.
-*
-* If the moduli of the polynomials do not match, the function returns an error. 
-*/
+/// Returns the sum of the two passed polynomials.
+/// Trailing zeros of the sum are cut in the process.
+///
+/// If the moduli of the polynomials do not match, the function returns an error. 
 pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
     // two polynomials with non-matching moduli cannot be added meaningfully
     if poly1.modulus != poly2.modulus {
@@ -187,14 +171,12 @@ pub fn add_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialE
     Ok(result_poly)
 }
 
-/*
-* Computes the sum of n polynomials which are passed as a vector of length n.
-* Trailing zeros of the sum are cut in the process.
-*
-* If the moduli of the polynomials do not match, the function returns an error. 
-*
-* If the passed vector is empty, the zero polynomial is returned.
-*/
+/// Computes the sum of n polynomials which are passed as a vector of length n.
+/// Trailing zeros of the sum are cut in the process.
+///
+/// If the moduli of the polynomials do not match, the function returns an error. 
+///
+/// If the passed vector is empty, the zero polynomial is returned.
 pub fn sum_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
     // empty sum of polynomials is integer zero polynomial
     if poly_vec.len() == 0 {
@@ -213,22 +195,18 @@ pub fn sum_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError>
     Ok(result)
 }
 
-/*
-* Returns the difference poly1 - poly2 of the two passed polynomials.
-* Trailing zeros of the difference are cut in the process.
-*
-* If the moduli of the polynomials do not match, the function returns an error. 
-*/
+/// Returns the difference poly1 - poly2 of the two passed polynomials.
+/// Trailing zeros of the difference are cut in the process.
+///
+/// If the moduli of the polynomials do not match, the function returns an error. 
 pub fn subtract_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
     add_poly(poly1, &poly2.additive_inverse())
 }
 
-/*
-* Returns the product of the two passed polynomials.
-* Trailing zeros of the product are cut in the process.
-*
-* If the moduli of the polynomials do not match, the function returns an error.
-*/
+/// Returns the product of the two passed polynomials.
+/// Trailing zeros of the product are cut in the process.
+///
+/// If the moduli of the polynomials do not match, the function returns an error.
 pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, PolynomialError> {
     // two polynomials with non-matching moduli cannot be multiplied meaningfully
     if poly1.modulus != poly2.modulus {
@@ -289,14 +267,12 @@ pub fn multiply_poly(poly1: &IntPoly, poly2: &IntPoly) -> Result<IntPoly, Polyno
     sum_of_polys(&poly_vec)
 }
 
-/*
-* Computes the product of n polynomials which are passed as a vector of length n.
-* Trailing zeros of the product are cut in the process.
-*
-* If the moduli of the polynomials do not match, the function returns an error. 
-*
-* If the passed vector is empty, the one polynomial is returned.
-*/
+/// Computes the product of n polynomials which are passed as a vector of length n.
+/// Trailing zeros of the product are cut in the process.
+///
+/// If the moduli of the polynomials do not match, the function returns an error. 
+///
+/// If the passed vector is empty, the one polynomial is returned.
 pub fn product_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialError> {
     // empty product of polynomials is the (integer) one polynomial
     if poly_vec.len() == 0 {
@@ -315,10 +291,8 @@ pub fn product_of_polys(poly_vec: &Vec<IntPoly>) -> Result<IntPoly, PolynomialEr
     Ok(result)
 }
 
-/*
-* Takes the passed polynomial to the power 
-* determined by the passed positive exponent.
-*/
+/// Takes the passed polynomial to the power 
+/// determined by the passed positive exponent.
 pub fn poly_power(poly: &IntPoly, exponent: usize) -> Result<IntPoly, PolynomialError> {
     /*
     * Need to catch this special case here since
@@ -340,9 +314,7 @@ pub fn poly_power(poly: &IntPoly, exponent: usize) -> Result<IntPoly, Polynomial
     product_of_polys(&poly_vec) // product_of_polys might throw a PolynomialError
 }  
 
-/*
-* Returns the zero polynomial with the passed Modulus.
-*/
+/// Returns the zero polynomial with the passed Modulus.
 pub fn zero_polynomial(md: Modulus) -> IntPoly {
     IntPoly::new(
         &mut vec![],
@@ -350,9 +322,7 @@ pub fn zero_polynomial(md: Modulus) -> IntPoly {
     )
 }
 
-/*
-* Returns the one polynomial with the passed Modulus.
-*/
+/// Returns the one polynomial with the passed Modulus.
 pub fn one_polynomial(md: Modulus) -> IntPoly {
     IntPoly::new(
         &mut vec![1],
@@ -362,19 +332,15 @@ pub fn one_polynomial(md: Modulus) -> IntPoly {
 
 
 
-/*
-* A modulus for a remainder class ring.
-* Implementation for the binary equals-operator is generated automatically using derived traits.
-*/
+/// A modulus for a remainder class ring.
+/// Implementation for the binary equals-operator is generated automatically using derived traits.
 #[derive(PartialEq, Debug, Copy, Clone)]
 pub enum Modulus {
     Some(i32),
     None
 }
 
-/*
-* Models the different error types that can occur when working with polynomials.
-*/
+/// Models the different error types that can occur when working with polynomials.
 #[derive(Debug, PartialEq)]
 pub enum PolynomialError {
     /*

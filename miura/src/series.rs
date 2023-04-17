@@ -1,13 +1,10 @@
-/* 
-* How many summands of a power series are computed.
-* Small number means higher efficiency 
-* while many iterations yield higher precision.
-*/
+/// How many summands of a power series are computed.
+/// Small number means higher efficiency 
+/// while many iterations yield higher precision.
 pub const NUM_ITERATIONS: usize = 100;
 
-/*
-* Computes the exponential function via power series expansion.
-*/
+/// Computes the exponential function via power series expansion.
+/// WIP function, currently lacking suitable floating point precision.
 pub fn exp(x: f64) -> f64 {
     /*
     * Nominator and denominator of the fraction are computed iteratively,

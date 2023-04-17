@@ -4,12 +4,10 @@
 
 use std::collections::HashMap; // for counting occurences in counting sort
 
-/*
-* Incremental sorting algorithm.
-* 
-* Note that this implementation works on a mutable reference to the input array
-* and thus changes the input array instead of creating a sorted version of it.
-*/
+/// Incremental sorting algorithm.
+///
+/// Note that this implementation works on a mutable reference to the input array
+/// and thus changes the input array instead of creating a sorted version of it.
 pub fn insertion_sort(a: &mut Vec<u32>) {
     /*
     * Insert the j-th element within the first j ones in the vector.
@@ -56,18 +54,16 @@ pub fn insertion_sort(a: &mut Vec<u32>) {
     }
 }
 
-/*
-* Uses the merge sort algorithm to sort the passed vector of non-negative integers.
-*
-* Merge sort is a classic divide-and-conquer algorithm, 
-* which works by splitting the instance at hand into two smaller sub-instances,
-* then solving those recursively 
-* and combining the two individual solutions into a solution for the initial instance.
-* 
-* In case of merge sort this combining means that two sorted vectors of integers
-* are combined into one by iterating through them simultaneously but independently,
-* and always putting the smaller one of the current two elements into the result vector.
-*/
+/// Uses the merge sort algorithm to sort the passed vector of non-negative integers.
+///
+/// Merge sort is a classic divide-and-conquer algorithm, 
+/// which works by splitting the instance at hand into two smaller sub-instances,
+/// then solving those recursively 
+/// and combining the two individual solutions into a solution for the initial instance.
+/// 
+/// In case of merge sort this combining means that two sorted vectors of integers
+/// are combined into one by iterating through them simultaneously but independently,
+/// and always putting the smaller one of the current two elements into the result vector.
 pub fn merge_sort(a: &Vec<u32>) -> Vec<u32> {
     // array of length 0 or 1 is trivially sorted
     if a.len() <= 1 {
@@ -86,14 +82,12 @@ pub fn merge_sort(a: &Vec<u32>) -> Vec<u32> {
     merge(&merge_sort( &(left.to_vec()) ), &merge_sort( &(right.to_vec()) ))
 }
 
-/*
-* Merges the two sorted input vectors into one vector.
-* Does not check whether the input arrays are actually sorted
-* and thus is not exposed as a part of the public API.  
-* 
-* Iterates through the left and right vector (with two independent cursors)
-* and always inserts the smaller of the current two elements into the result vector.
-*/
+/// Merges the two sorted input vectors into one vector.
+/// Does not check whether the input arrays are actually sorted
+/// and thus is not exposed as a part of the public API.  
+/// 
+/// Iterates through the left and right vector (with two independent cursors)
+/// and always inserts the smaller of the current two elements into the result vector.
 fn merge(left: &Vec<u32>, right: &Vec<u32>) -> Vec<u32> {
     // define the two independent cursors
     let mut left_current = 0;
@@ -133,15 +127,13 @@ fn merge(left: &Vec<u32>, right: &Vec<u32>) -> Vec<u32> {
     result
 }
 
-/*
-* Uses the quicksort algorithm to sort the passed array of positive integers.
-*
-* Quicksort is a Divide-and-Conquer algorithm which splits up the passed array a
-* into two shorter arrays based on a pivot element (here: the first element in a).
-* The "left" subarray contains all elements smaller/equal than the pivot element
-* while the right one contains all greater elements.
-* These two subarrays are then recursively sorted and "inserted" left and right of the pivot.
-*/
+/// Uses the quicksort algorithm to sort the passed array of positive integers.
+///
+/// Quicksort is a Divide-and-Conquer algorithm which splits up the passed array a
+/// into two shorter arrays based on a pivot element (here: the first element in a).
+/// The "left" subarray contains all elements smaller/equal than the pivot element
+/// while the right one contains all greater elements.
+/// These two subarrays are then recursively sorted and "inserted" left and right of the pivot.
 pub fn quicksort(a: &Vec<u32>) -> Vec<u32> {
     // empty list and list with only one element are trivially sorted
     if a.len() <= 1 {
@@ -184,16 +176,14 @@ pub fn quicksort(a: &Vec<u32>) -> Vec<u32> {
     result
 }
 
-/*
-* Uses the counting sort algorithm to sort the vector referenced by a. 
-*
-* Requires an upper bound s on the elements in the vector a.
-* If there is a number above s in the vector a (invalid instance), counting sort returns an Err variant.
-*
-* Counting sort counts how often each number from {0, ..., s} occurs in the vector.
-* It then creates a new vector into which it inserts all numbers as many times as they occured,
-* starting with the lowest.
-*/
+/// Uses the counting sort algorithm to sort the vector referenced by a. 
+///
+/// Requires an upper bound s on the elements in the vector a.
+/// If there is a number above s in the vector a (invalid instance), counting sort returns an Err variant.
+///
+/// Counting sort counts how often each number from {0, ..., s} occurs in the vector.
+/// It then creates a new vector into which it inserts all numbers as many times as they occured,
+/// starting with the lowest.
 pub fn counting_sort(a: &Vec<u32>, s: u32) -> Result<Vec<u32>, SortingInstanceError> {
     // check instance for validity: all values in a smaller/equal s?
     for &x in a.iter() { 
@@ -222,8 +212,6 @@ pub fn counting_sort(a: &Vec<u32>, s: u32) -> Result<Vec<u32>, SortingInstanceEr
     Ok(result)
 }
 
-/*
-* Struct modelling any error that could occur from an unsuitable input to a sorting algorithm.
-*/
+/// Unit-like struct modelling any error that could occur from an unsuitable input to a sorting algorithm.
 #[derive(Debug, PartialEq)]
 pub struct SortingInstanceError;

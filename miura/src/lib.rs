@@ -519,7 +519,7 @@ mod tests {
             Modulus::None
         );
 
-        println!("{}", poly1.to_string());
+        assert_eq!(poly1.to_string(), "1X^0 + 2X^1 + 1X^2");
     }
 
 
