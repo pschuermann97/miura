@@ -900,7 +900,7 @@ mod tests {
                 vec![4.0, 5.0, 6.0],
                 vec![7.0, 8.0, 426.0]
             ]
-        );
+        ).unwrap();
 
         println!("Asserting that 2nd row is extracted correctly.");
 
@@ -921,7 +921,7 @@ mod tests {
                 vec![5.0, 6.0, 7.0, 426.0],
                 vec![9.0, 10.0, 11.0, 12.0]
             ]
-        );
+        ).unwrap();
 
         println!("Asserting that second row can be correctly scaled by 1.5.");
 
@@ -942,7 +942,7 @@ mod tests {
                 vec![426.0, 8.0, 426.0],
                 vec![10.0, 11.0, 12.0]
             ]
-        );
+        ).unwrap();
 
         println!("Asserting that rows 1 and 2 can be correctly swapped.");
 
@@ -956,7 +956,7 @@ mod tests {
                     vec![4.0, 426.0, 5.0],
                     vec![10.0, 11.0, 12.0]
                 ]
-            )
+            ).unwrap()
         )
     }
 
@@ -970,7 +970,7 @@ mod tests {
                 vec![0.0, 2.0],
                 vec![4.0, 426.0]
             ]
-        );
+        ).unwrap();
 
         println!("Adding 3.2 times row 0 to row 1.");
 
@@ -983,7 +983,7 @@ mod tests {
                     vec![3.2, 11.6],
                     vec![4.0, 426.0]
                 ]
-            )
+            ).unwrap()
         );
     }
 
@@ -997,7 +997,7 @@ mod tests {
                 vec![0.0, 0.0, 0.0, 0.0],
                 vec![9.0, 10.0, 11.0, 0.0]
             ]
-        );
+        ).unwrap();
 
         println!("Asserting that zero row is correctly classified.");
 
@@ -1026,7 +1026,7 @@ mod tests {
                 vec![0.0, 0.0, 0.0],
                 vec![0.0, 1.0, 0.0]
             ]
-        );
+        ).unwrap();
 
         println!("Searching for non zero elements in different columns.");
 
@@ -1048,7 +1048,7 @@ mod tests {
                 vec![0.0, 0.0, 0.0],
                 vec![0.0, 0.0, 0.0],
             ]
-        );
+        ).unwrap();
 
         println!("Searching for next non-zero row from various different starting rows.");
 
@@ -1069,7 +1069,7 @@ mod tests {
                 vec![2.0, 1.0, 0.0, 1.0],
                 vec![3.0, 1.0, 2.0, 0.0]
             ]
-        );
+        ).unwrap();
 
         println!("Assert that upper triangular form of the first test matrix is correctly computed.");
 
@@ -1082,7 +1082,7 @@ mod tests {
                     vec![0.0, 1.0, 0.0, -5.0],
                     vec![0.0, 0.0, 1.0, -2.0]
                 ]
-            )
+            ).unwrap()
         );
 
         println!("Creating 3x5 test matrix.");
@@ -1093,7 +1093,7 @@ mod tests {
                 vec![1.0, -1.0, -3.0, 0.0, -8.0],
                 vec![2.0, -2.0, -2.0, 2.0, 5.0]
             ]
-        );
+        ).unwrap();
 
         println!("Assert that upper triangular form of the second test matrix is correctly computed.");
 
@@ -1106,7 +1106,7 @@ mod tests {
                     vec![0.0, 0.0, 1.0, 0.5, 0.0],
                     vec![0.0, 0.0, 0.0, 0.0, 1.0]
                 ]
-            )
+            ).unwrap()
         );
 
         println!("Creating 4x5 test matrix.");
@@ -1118,7 +1118,7 @@ mod tests {
                 vec![3.0, 0.0, -3.0, 0.0, 3.0],
                 vec![8.0, 2.0, -4.0, -1.0, 13.0]
             ]
-        );
+        ).unwrap();
 
         println!("Assert that upper triangular form of the third test matrix is correctly computed.");
 
@@ -1132,7 +1132,7 @@ mod tests {
                     vec![0.0, 0.0, 1.0, 0.0, 1.0],
                     vec![0.0, 0.0, 0.0, 1.0, -1.0]
                 ]
-            )
+            ).unwrap()
         );
 
         println!("Creating 3x4 test matrix.");
@@ -1143,7 +1143,7 @@ mod tests {
                 vec![3.0, 1.0, 1.0, 0.0],
                 vec![2.0, 1.0, 0.0, 0.0]
             ]
-        );
+        ).unwrap();
 
         println!("Assert that upper triangular form of the fourth test matrix is correctly computed.");
 
@@ -1156,7 +1156,7 @@ mod tests {
                     vec![0.0, 1.0, -2.0, 0.0],
                     vec![0.0, 0.0, 0.0, 0.0]
                 ]
-            )
+            ).unwrap()
         );
 
         println!("Assert idempotency of operation.");
@@ -1173,7 +1173,7 @@ mod tests {
                     vec![0.0, 1.0, -2.0, 0.0],
                     vec![0.0, 0.0, 0.0, 0.0]
                 ]
-            )
+            ).unwrap()
         );
     }
 

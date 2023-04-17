@@ -2,10 +2,11 @@ use std::cmp::max; // maximum function
 use crate::vec_helper::*; // helper functions for operating on coefficient vectors
 
 /*
-* Models a polynomial with either integer coefficients 
+* Models a polynomial a_0 + a_1 * X + ... + a_n * X^n with either integer coefficients 
 * or coefficients from a remainder class ring. 
-*
-* The highest-degree monomial is guaranteed to have a coefficient != 0.
+* 
+* Polynomials are stored as coefficient vectors
+* and the coefficient for the highest-degree monomial is guaranteed to be != 0.
 */
 #[derive(PartialEq, Debug, Clone)]
 pub struct IntPoly {

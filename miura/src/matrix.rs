@@ -1,27 +1,35 @@
 use crate::vec_helper::scale_vector;
 use crate::vec_helper::is_zero_vector;
 
-/*
-* A struct describing a matrix of real numbers
-* with double floating point precision.
-*
-* The matrix is stored as a vector of row vectors.
-*/
+
+/// A struct describing a matrix of real numbers
+/// with double floating point precision.
+///
+/// The matrix is stored as a vector of row vectors.
 #[derive(PartialEq, Debug, Clone)]
 pub struct Matrix {
     rows: Vec<Vec<f32>>
 }
 
 impl Matrix {
-    /*
-    * Simple constructor to have matrix API that is similar to polynomials and permutations.
-    */
-    pub fn new(rows: Vec<Vec<f32>>) -> Matrix {
-        Matrix {
-            rows
+    /// Constructs a matrix from the passed vector of row vectors.
+    /// 
+    /// If the passed row vectors do not have the same length,
+    /// an error variant is returned.
+    pub fn new(rows: Vec<Vec<f32>>) -> Result<Matrix, MatrixError> {
+        let expected_row_len = rows[0].len();
+        for row in &rows {
+            if row.len() != expected_row_len {
+                return Err(MatrixError::NonUniformRowLengthError);
+            }
         }
+
+        Ok(Matrix {
+            rows
+        })
     }
 
+    /// Returns the entry in row i and column j of the matrix.
     pub fn entry(self: &Self, i: usize, j: usize) -> f32 {
         self.rows[i][j]
     }
@@ -141,12 +149,9 @@ impl Matrix {
                     * should continue from the left end of the row.
                     */
                     current_pivot_position = 0;
-                    println!("No pivot position found in row: {}", current_row);
                     continue 'pivot_row_creation;
                 }
             }
-
-            println!("pivot position in row {}: {}", current_row, current_pivot_position);
                 
             // normalize the row
             self.scale_row(
@@ -164,8 +169,6 @@ impl Matrix {
                     );
                 }
             }
-                
-            Self::display_matrix(self);
         }
     }
 
@@ -239,16 +242,11 @@ impl Matrix {
 }
 
 
-
-pub struct LinearEquationSystem{
-    coefficient_matrix: Matrix,
-    constant_vector: Vec<f32>
+/// Type modelling all different kinds of errors
+/// that can occur when working with real matrices. 
+#[derive(PartialEq, Debug, Clone)]
+pub enum MatrixError{
+    NonUniformRowLengthError
 }
 
-impl LinearEquationSystem {
-    pub fn extended_coefficient_matrix(self: &Self) -> Matrix {
-        Matrix::new(
-            vec![]
-        )
-    }
-}
+
