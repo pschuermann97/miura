@@ -901,7 +901,7 @@ mod tests {
     }
 
     #[test]
-    fn swap_rows_test() {
+    fn switch_rows_test() {
         println!("Creating 4x3 test matrix.");
 
         let mut test_matrix = Matrix::new(
@@ -915,7 +915,7 @@ mod tests {
 
         println!("Asserting that rows 1 and 2 can be correctly swapped.");
 
-        test_matrix.swap_rows(1, 2);
+        test_matrix.switch_rows(1, 2);
         assert_eq!(
             test_matrix,
             Matrix::new(
@@ -1100,6 +1100,47 @@ mod tests {
                     vec![0.0, 1.0, 0.0, 0.0, 0.0],
                     vec![0.0, 0.0, 1.0, 0.0, 1.0],
                     vec![0.0, 0.0, 0.0, 1.0, -1.0]
+                ]
+            )
+        );
+
+        println!("Creating 3x4 test matrix.");
+
+        let mut test_matrix4 = Matrix::new(
+            vec![
+                vec![3.0, 0.0, 3.0, 0.0],
+                vec![3.0, 1.0, 1.0, 0.0],
+                vec![2.0, 1.0, 0.0, 0.0]
+            ]
+        );
+
+        println!("Assert that upper triangular form of the fourth test matrix is correctly computed.");
+
+        test_matrix4.to_upper_triangular();
+        assert_eq!(
+            test_matrix4,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 1.0, 0.0],
+                    vec![0.0, 1.0, -2.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0]
+                ]
+            )
+        );
+
+        println!("Assert idempotency of operation.");
+
+        // at this point, the matrix already is in upper triangular form
+        test_matrix4.to_upper_triangular();
+
+        test_matrix4.to_upper_triangular();
+        assert_eq!(
+            test_matrix4,
+            Matrix::new(
+                vec![
+                    vec![1.0, 0.0, 1.0, 0.0],
+                    vec![0.0, 1.0, -2.0, 0.0],
+                    vec![0.0, 0.0, 0.0, 0.0]
                 ]
             )
         );

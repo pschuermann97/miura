@@ -80,9 +80,9 @@ impl Matrix {
     }
 
     /*
-    * Swaps the rows i and j of the matrix.
+    * Switches the rows i and j of the matrix.
     */
-    pub fn swap_rows(self: &mut Self, i: usize, j: usize) {
+    pub fn switch_rows(self: &mut Self, i: usize, j: usize) {
         let tmp = self.row(i).clone();
         self.rows[i] = self.rows[j].clone();
         self.rows[j] = tmp;
