@@ -2,7 +2,7 @@
 Math library written in Rust for learning.
 
 Features:
-- matrix module:
+- matrix module (wip):
   - row operations (addition, multiplication, switching)
   - transformation to upper triangular matrix
 - poly module:
