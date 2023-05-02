@@ -1,3 +1,8 @@
+//! An API to work with mathematical permutations
+//! i.e. bijective mappings from {1, ..., n} to {1, ..., n}.
+
+
+
 use crate::vec_helper::check_unique_in_1_to_n;
 use std::collections::HashSet;
 

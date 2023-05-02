@@ -1,6 +1,6 @@
-/*
-* Contains helper functions that operate on integer vectors.
-*/
+//! Contains helper functions that operate on integer vectors.
+
+
 
 use crate::poly::Modulus;
 use std::collections::HashSet;

@@ -2,7 +2,16 @@
 name = "miura"
 version = "0.1.0"
 edition = "2021"
+description = "Math library written for learning Rust."
+keywords = ["math", "polynomial", "permutation", "matrix", "sorting"]
+license = "CC-BY-NC-SA-1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level=3

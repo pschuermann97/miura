@@ -1,5 +1,5 @@
 # miura
-Math library in Rust for learning/education purposes.
+Math library in Rust for learning/education purposes which is in early development.
 
 Features:
 - matrix module:

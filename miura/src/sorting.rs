@@ -1,6 +1,6 @@
-/*
-* Rust implementations of several popular sorting algorithms.
-*/
+//! Rust implementations of several popular sorting algorithms.
+
+
 
 use std::collections::HashMap; // for counting occurences in counting sort
 

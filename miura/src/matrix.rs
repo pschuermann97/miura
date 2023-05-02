@@ -1,6 +1,10 @@
+//! A work-in-progress module 
+//! that allows to perform operations on real matrices.
+
+
+
 use crate::vec_helper::scale_vector;
 use crate::vec_helper::is_zero_vector;
-
 
 /// A struct describing a matrix of real numbers
 /// with double floating point precision.

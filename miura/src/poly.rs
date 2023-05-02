@@ -1,3 +1,7 @@
+//! An API to perform arithmetic operations on integer polynomials.
+
+
+
 use std::cmp::max; // maximum function
 use crate::vec_helper::*; // helper functions for operating on coefficient vectors
 
