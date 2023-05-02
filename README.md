@@ -1,8 +1,8 @@
 # miura
-Math library in Rust for learning/education purposes which is in early development.
+Math library written in Rust for learning which is in early development.
 
 Features:
-- matrix module:
+- matrix module (wip):
   - row operations (addition, multiplication, switching)
   - transformation to upper triangular matrix
 - poly module:
