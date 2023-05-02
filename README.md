@@ -1,5 +1,7 @@
 # miura
 Math library written in Rust for learning which is in early development.
+In the following, you find a list miura's features.
+For detailed documentation, refer to https://docs.rs/miura/latest/miura/. 
 
 Features:
 - matrix module (wip):
